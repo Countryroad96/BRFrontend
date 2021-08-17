@@ -1,0 +1,80 @@
+.SiteFrame {
+  width: 1280px;
+  margin: auto;
+  border: black solid 1px;
+
+  .SiteHead {
+    position: relative;
+    display: inline-block;
+    height: 130px;
+    width: 100%;
+
+    .SiteName {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: black solid 1px;
+      position: absolute;
+      left: 7%;
+      top: 50%;
+      height: 52px;
+      width: 228px;
+    }
+    .Input {
+      border: black solid 1px;
+      position: absolute;
+      top: 50%;
+      left: 30%;
+
+      .InputBar {
+        margin: 1px;
+        width: 460px;
+        font-size: 21px;
+        font-weight: bold;
+        padding: 11px;
+        vertical-align: middle;
+      }
+      .InputButton {
+        height: 52px;
+        width: 57px;
+        vertical-align: middle;
+      }
+    }
+    .UserInfoBox {
+      display: flex;
+      align-items: center;
+      height: 54px;
+      top: 50%;
+      left: 77%;
+      position: absolute;
+
+      .UserThumb {
+        height: 54px;
+        border-radius: 27px;
+        margin-right: 5px;
+      }
+    }
+    .GoogleLoginButton {
+      top: 53%;
+      right: 8%;
+      position: absolute;
+    }
+    .GoogleLogoutButton {
+      top: 53%;
+      right: 8%;
+      position: absolute;
+    }
+  }
+
+  .SearchPager {
+    text-align: center;
+    height: 20px;
+
+    .SearchPageButton {
+      width: 24px;
+      height: 22px;
+      margin: 2px;
+      padding: 0px;
+    }
+  }
+}

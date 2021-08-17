@@ -1,0 +1,23 @@
+.SearchList {
+  border: black solid 1px;
+  text-align: left;
+  margin-top: 100px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  list-style-type: none;
+
+  .BookInfoBox {
+    display: flex;
+    height: 132px;
+    margin-left: 20px;
+    align-items: center;
+    .BookImg {
+      margin-left: 2px;
+      margin-right: 5px;
+    }
+  }
+}
