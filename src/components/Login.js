@@ -1,19 +1,27 @@
 import React, { useCallback, useState } from "react";
 //import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
+import { useDispatch, useSelector } from 'react-redux';
+import updateLoginState, { updateLogin } from '../modules/LoginState';
 import Modal from "./Modal.js";
 
 const clientId = "323793340670-isvcim8icgebo1juvq01iimrqohprd97.apps.googleusercontent.com"
 
 function Login(props) {
 
+    const dispatch = useDispatch();
+
     const[modal, setModal] = useState(false);
     const[modalInfo, setModalInfo] = useState({});
     
     const onSuccess = (res) => {
         let userInfo = {name: res.profileObj.name, 
+                        sex: '0',
+                        region: "31",
+                        subregion: "103",
                         imgURL: res.profileObj.imageUrl, 
-                        username: String(res.profileObj.googleId)};
+                        username: String(res.profileObj.googleId),
+                        age: "20"};
 
         // axios.post(`${END_POINT}/login`,{username: userInfo.username})
         // .then((response) => {
@@ -29,16 +37,20 @@ function Login(props) {
         //         textList.push(item)
         //     }
         //     refreshTokenSetup(res);
+
         console.log("Login Info",userInfo);
-        props.setLoginInfo(userInfo);
-        props.setLoginState(true);
-        
-        setModalInfo({
-            title: "Login Success",
-            description: `Welcome ${userInfo.name}`,
-            clickoff: true
-        });
-        setModal(true);
+        //props.setLoginInfo(userInfo);
+
+        // setModalInfo({
+        //     title: "Login Success",
+        //     description: `Welcome ${userInfo.name}`,
+        //     clickoff: true
+        // });
+        // setModal(true);
+
+        //props.setLoginState(true);
+
+        dispatch(updateLogin(userInfo));
     }
     
     //로그인 실패시 실행
@@ -62,7 +74,8 @@ function Login(props) {
                 onFailure={onFailure} // 실패시 실행
                 cookiePolicy={'single_host_origin'}
                 />
-            {modal ? <Modal setModal={setModal} 
+            {modal ? <Modal
+                setModal={setModal} 
                 title={modalInfo.title}
                 description={modalInfo.description}
                 clickoff={false}

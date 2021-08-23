@@ -34,9 +34,8 @@ const Modal = (props) => {
                     <h3>{props.title}</h3>
                     <p>내용입니다.</p>
                     <p>{props.description}</p>
-                    <RenderMaps />
                     <div>
-                        <button onClick={() => props.setModal(false)} >닫기</button>
+                        <button onClick={() => {props.setModal(false);}} >닫기</button>
                     </div>
                 </div>
             </div>

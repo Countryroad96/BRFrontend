@@ -1,23 +1,31 @@
-.SearchList {
+.BookInfoBox {
   border: black solid 1px;
-  text-align: left;
-  margin-top: 100px;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  display: flex;
+  //height: 132px;
+  align-items: center;
 
-  list-style-type: none;
+  .BookImg {
+    margin-left: 2px;
+    margin-right: 5px;
+  }
+  .BookImgTable {
+    width: 92px;
+  }
 
-  .BookInfoBox {
-    display: flex;
-    height: 132px;
-    margin-left: 20px;
-    align-items: center;
-    .BookImg {
-      margin-left: 2px;
-      margin-right: 5px;
+  .BookDetailInfo {
+    margin-top: 20px;
+    padding-inline: 50px;
+    //text-align: center;
+
+    .LibraryInfo {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+
+      .LibraryDetailInfo {
+        //margin-top: px;
+        margin-left: 100px;
+      }
     }
   }
 }

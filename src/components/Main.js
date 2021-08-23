@@ -1,9 +1,16 @@
 import React, { useCallback, useState } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import axios from "axios";
+import Bestseller from "./BestsellerList";
+import LibraryRank from './LibraryRank';
 import BookList from "./BookList";
+import Mypage from "./Mypage";
+import RegionCodeTranslate from './RegionCodeTranslate';
 import Login from './Login';
 import Logout from './Logout';
 import "../style/Main.scss";
+
+import RegionSelector from './RegionSelector';
 
 const END_POINT = "/v1/search/book.json";
 const Client_ID = "6kzLim7jrHaqIQQcyTyH";
@@ -15,10 +22,16 @@ function Main() {
     const [searchText, setSearchText] = useState("");
     const [books, setBook] = useState([]);
     const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
     const [display, setDisplay] = useState(10);
     const [searchState, setSearchState] = useState(false);
-    const [loginInfo, setLoginInfo] = useState({});
-    const [loginState, setLoginState] = useState(false);
+    // const [loginInfo, setLoginInfo] = useState({});
+    // const [loginState, setLoginState] = useState(false);
+    const [openMypage, setOpenMypage] = useState(false);
+
+    const loginState = useSelector(state => state.updateLoginState.login);
+    const loginInfo = useSelector(state => state.updateLoginState.user);
+
 
 
     const getSearchBook = async () => {
@@ -48,27 +61,40 @@ function Main() {
             );
             
             let testlist = [];
+            let totalpage = 0;
             
             for (let j = 0; j < display; j++) {
                 let k = 0;
                 let temp = [];
                 for (let i = j*10; i < (j+1)*10; i++) {
+                    if (typeof(booklist[i]) !== "undefined" && booklist[i] !== "undefined") {
+                        //console.log('booklist[i]',booklist[i]);
+                        //console.log(booklist[i].length);
                         temp[k] = booklist[i];
                         k++;
+                    }
                 }
-                testlist[j] = temp;
+                //console.log('temp', temp);
+
+                if (temp.length !== 0) {
+                    testlist[j] = temp;
+                    totalpage++;
+                }
             };
 
-            let final = testlist.filter((i) => i.filter(item => item !== "undefined") !== "undefined");
-            console.log("final list", final);
-            console.log("test list", testlist);
+            //let final = testlist.filter((i) => i.filter(item => item !== "undefined") !== "undefined");
+            //console.log("final list", final);
+            //console.log("test list", testlist);
 
             
+            //setBook({books: testlist, finish: true});
+            setTotalPage(totalpage);
             setBook(testlist);
-            setSearchState(true);
+            setSearchState(true)
 
             //console.log("res.data",res.data);
-            console.log("testlist",testlist);
+            //console.log("testlist",testlist);
+            //console.log('booklist', booklist);
             //console.log("books",books); // 콘솔에 undefined라고 찍힘
             
         } 
@@ -80,10 +106,12 @@ function Main() {
     const onSubmit = (e) => {
         e.preventDefault();
         console.log(searchText);
+        setOpenMypage(false);
         setBook([]);
         setSearchState(false);
         setPage(1);
         getSearchBook();
+        setTotalPage(0);
     }
 
     const onKeyUp = (e) => {
@@ -92,34 +120,114 @@ function Main() {
         }
     }
 
-    const renderButton = () => {
-        let pagelist = [1,2,3,4,5,6,7,8,9,10];
+    const onClickHomepage = () => {
+        setOpenMypage(false);
+        setBook([]);
+        setSearchState(false);
+        setPage(1);
+        setTotalPage(0);
+    }
+
+    const renderSearchlist = () => {
         return (
-            pagelist.map((v, i) => {
-                return (
-                <button className="SearchPageButton" onClick={() => setPage(i+1)}>{v}</button>
-                )
-            })
-        );
+            <div className="SearchList">
+                {books[page-1].map((book, i) => <BookList key={book.id} book={book} i={i} />)}
+            </div>
+        )
+    }
+
+    const RenderPageButton = (props) => {
+        return (
+            <button className="SearchPageButton" onClick={() => setPage(props.i+1)}>{props.v}</button>
+        )
+    }
+
+    const renderButton = useCallback(() => {
+        let pagelist = [];
+        for (let i = 0; i < totalPage; i++){
+            pagelist.push(i+1);
+        }
+        console.log('maxpage',totalPage);
+        if (totalPage > 1){
+            return (
+                <div className="SearchPager">  
+                    {pagelist.map((v, i) => <RenderPageButton key={i} v={v} i={i} />)}
+                </div>
+            );
+        }        
+    },[totalPage])
+
+    const onUserInfoClick = () => {
+        setBook([]);
+        setPage(1);
+        setTotalPage(0);
+        setSearchState(false);
+        setOpenMypage(true);
     }
 
     const renderUserInfo = useCallback(() => {
         return(
-            <div className="UserInfoBox">
+            <div className="UserInfoBox" onClick={onUserInfoClick}>
                 <img className='UserThumb' src={loginInfo.imgURL} alt='userThumb'></img>
                 <div className='UserInfo'>
                     {loginInfo.name}님 환영합니다.
                 </div>
-                <Logout setLoginInfo={setLoginInfo} setLoginState={setLoginState}/>
+                
             </div>
         )
 
-    },[loginInfo])
+    },[loginInfo.imgURL, loginInfo.name])
+
+    const renderMypage = () => {
+
+//         const sex = ["남성", "여성", "미상"];
+//         const age = {
+//             "0": "영유아(0~5세)",
+//             "6": "유아(6~7세)",
+//             "8": "초등(8~13세)",
+//             "14": "청소년(14~19세)",
+//             "20": "20대",
+//             "30": "30대",
+//             "40": "40대",
+//             "50": "50대",
+//             "60": "60세 이상",
+//             "-1": "미상",
+//         }
+// //
+//         return(
+//             <div className="Mypage">
+//                 <h2>{loginInfo.name}님의 마이페이지</h2>
+//                 <div>
+//                     <span>성별 : {sex[loginInfo.sex]}</span><br/>
+//                     <span>나이 : {age[loginInfo.age]}</span><br/>
+//                     <span>지역 : </span><RegionCodeTranslate code={loginInfo.region
+//                                                                 + loginInfo.subregion} />
+                    
+
+//                 </div>
+//                 <div>
+//                     {/* <button onClick={() => RegionSelector()}>테스트</button> */}
+//                     <RegionSelector />
+//                 </div>
+
+//                 <div>
+//                     <Logout 
+//                         // setLoginInfo={setLoginInfo}
+//                         // setLoginState={setLoginState}
+//                         setOpenMypage={setOpenMypage}
+//                     />
+//                 </div>
+//             </div>
+//         )
+        return (
+            <Mypage setOpenMypage={setOpenMypage} />
+        )
+    }
 
     return (
             <div className="SiteFrame">
                 <div className="SiteHead">
-                    <div className="SiteName">책 추천 사이트 테스트</div>
+                    <div className="SiteName" onClick={onClickHomepage}>책 추천 사이트 테스트</div>
                     <div className="Input">
                         <input
                             className="InputBar"
@@ -133,13 +241,16 @@ function Main() {
                             className="InputButton"
                             onClick={onSubmit}>검색</button>
                     </div>
-                        {loginState ? renderUserInfo() : <Login setLoginInfo={setLoginInfo} setLoginState={setLoginState} />}
+                        {loginState ? renderUserInfo() : <Login 
+                        // setLoginInfo={setLoginInfo}
+                        // setLoginState={setLoginState}
+                        />}
                 </div>
-                <div className="SearchList">
-                    {(searchState && books.length > 0) ? <BookList books={books[page-1]} /> : null}
-                    <div className="SearchPager">  
-                    {(searchState && books.length > 0) ? renderButton() : null}
-                    </div>
+                <div className="SiteBody">
+                    {openMypage ? renderMypage() : null}
+                    {(searchState) ? renderSearchlist() : null}
+                    {(searchState || openMypage) ? null : (loginState ? <LibraryRank /> : <Bestseller />)}
+                    {(searchState) ? renderButton() : null}
                 </div>
             </div>
     );
