@@ -628,9 +628,9 @@ function RegionCodeTranslate(props) {
         },
     }
 
-    const [result, setResult] = useState("");
+    //const [result, setResult] = useState({});
 
-    useEffect(() => {
+    //useEffect(() => {
         const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '울산광역시',
                         '세종특별자치시'];
 
@@ -652,17 +652,26 @@ function RegionCodeTranslate(props) {
 
         if (MetropolitanCity.includes(regionName)) {
             cityName = Object.keys(dtl_regionCode[regionName]).find(key => dtl_regionCode[regionName][key] === cityNum);
-            setResult(regionName + " " + cityName);
+            return ({
+                fullName: regionName + " " + cityName,
+                regionName: regionName,
+                cityName: cityName,
+                });
         }
         else {
             cityName = Object.keys(dtl_regionCode[regionName])[cityNum2];
             townName = Object.keys(dtl_regionCode[regionName][cityName]).find(key => dtl_regionCode[regionName][cityName][key] === townNum);
-            setResult(regionName + " " + cityName + " " + townName);
+            return ({
+                fullName: regionName + " " + cityName + " " + townName,
+                regionName: regionName,
+                cityName: cityName,
+                townName: townName,
+            });
         }
-        console.log('result', result);
-    },[props.code]);
+        //console.log('result', result);
+    //},[]);
 
-    return result
+    //return result
     
 
 }

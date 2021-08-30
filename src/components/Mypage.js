@@ -23,6 +23,16 @@ function Mypage(props) {
         "60": "60세 이상",
         "-1": "미상",
     };
+
+    // const codeTranslate = () => {
+    //     console.log(RegionCodeTranslate({code: `${loginInfo.region + loginInfo.subregion}`}))
+    //     return(
+    //         <RegionCodeTranslate code={loginInfo.region + loginInfo.subregion} />   
+    //     );
+    // };
+
+    const region = RegionCodeTranslate({code: `${loginInfo.region + loginInfo.subregion}`});
+    console.log(region);
 //
     return(
         <div className="Mypage">
@@ -30,14 +40,13 @@ function Mypage(props) {
             <div>
                 <span>성별 : {sex[loginInfo.sex]}</span><br/>
                 <span>나이 : {age[loginInfo.age]}</span><br/>
-                <span>지역 : </span><RegionCodeTranslate code={loginInfo.region
-                                                            + loginInfo.subregion} />
+                <span>지역 : </span>{region.fullName}
                 
 
             </div>
             <div>
                 {/* <button onClick={() => RegionSelector()}>테스트</button> */}
-                <RegionSelector onSubmit={updateUserInfo}/>
+                <RegionSelector onSubmit={updateUserInfo} changeLoginstate={true} setRegion={false}/>
             </div>
 
             <div>

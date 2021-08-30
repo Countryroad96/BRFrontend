@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import { GoogleLogin } from 'react-google-login';
 import { useDispatch, useSelector } from 'react-redux';
 import updateLoginState, { updateLogin } from '../modules/LoginState';
+import { selectRegion } from '../modules/SelectedRegionCode';
 import Modal from "./Modal.js";
 
 const clientId = "323793340670-isvcim8icgebo1juvq01iimrqohprd97.apps.googleusercontent.com"
@@ -51,6 +52,10 @@ function Login(props) {
         //props.setLoginState(true);
 
         dispatch(updateLogin(userInfo));
+        dispatch(selectRegion({
+            region: userInfo.region,
+            subregion: userInfo.subregion,
+        }));
     }
     
     //로그인 실패시 실행

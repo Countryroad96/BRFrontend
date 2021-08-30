@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserInfo } from '../modules/LoginState';
+import { selectRegion } from '../modules/SelectedRegionCode';
+import RegionCodeTranslate from './RegionCodeTranslate';
 import { useForm } from 'react-hook-form';
 
 
@@ -8,7 +10,17 @@ import { useForm } from 'react-hook-form';
 function RegionSelector(props) {
 
     const loginInfo = useSelector(state => state.updateLoginState.user);
+    const loginState = useSelector(state => state.updateLoginState.login);
     const dispatch = useDispatch();
+
+    
+    const [loginInfoRegion, setloginInfoRegion] = useState({});
+    const [selectedRegion, setSelectRegion] = useState("서울특별시");
+    const [selectRegionCode, setSelectRegionCode] = useState("");
+    const [selectedCity, setSelectCity] = useState("");
+    const [selectCityCode, setSelectCityCode] = useState("");
+    const [selectTown, setSelectTown] = useState("");
+    const [selectTownCode, setSelectTownCode] = useState("");
 
     const regionCode = {
         서울특별시: '11',
@@ -657,7 +669,7 @@ function RegionSelector(props) {
         // console.log(dtl_regionCode[selectRegion][selectCity]);
         // console.log(dtl_regionCode[selectRegion][selectCity][selectTown]);
 
-        if (selectCity !== "군/구" && selectCity !== "시/군/구" && selectCity.length > 0){
+        if (selectedCity !== "군/구" && selectedCity !== "시/군/구" && selectedCity.length > 0){
             if (MetropolitanCity.includes(REGION_VALUE)){
                 console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
                 let newloginInfo = {
@@ -665,8 +677,19 @@ function RegionSelector(props) {
                     region: regionCode[REGION_VALUE],
                     subregion: dtl_regionCode[REGION_VALUE][CITY_VALUE],
                 };
+                let temp = {
+                    region: regionCode[REGION_VALUE],
+                    subregion: dtl_regionCode[REGION_VALUE][CITY_VALUE],
+                };
         
-                dispatch(props.onSubmit(newloginInfo));
+                if (props.changeLoginstate) {
+                    dispatch(props.onSubmit(newloginInfo))
+                };
+                if(props.setRegion) {
+                    console.log('temp', temp);
+                    dispatch(selectRegion(temp))
+                };
+
             }
             else{
                 console.log(regionCode[REGION_VALUE]
@@ -676,7 +699,18 @@ function RegionSelector(props) {
                     region: regionCode[REGION_VALUE],
                     subregion: dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE],
                 };
-                dispatch(props.onSubmit(newloginInfo));
+                let temp = {
+                    region: regionCode[REGION_VALUE],
+                    subregion: dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE],
+                };
+
+                if(props.changeLoginstate) {
+                    dispatch(props.onSubmit(newloginInfo))
+                };
+                if(props.setRegion) {
+                    console.log('temp', temp);
+                    dispatch(selectRegion(temp))
+                };
             }       
         }
         else{
@@ -690,12 +724,7 @@ function RegionSelector(props) {
         //setSelectRegionCode(regionCode[REGION_VALUE]);
     }
 
-    const [selectRegion, setSelectRegion] = useState("서울특별시");
-    const [selectRegionCode, setSelectRegionCode] = useState("");
-    const [selectCity, setSelectCity] = useState("");
-    const [selectCityCode, setSelectCityCode] = useState("");
-    const [selectTown, setSelectTown] = useState("");
-    const [selectTownCode, setSelectTownCode] = useState("");
+
 
     // for (let k in dtl_regionCode.서울특별시) {
     //     const v = dtl_regionCode.서울특별시[k];
@@ -704,6 +733,25 @@ function RegionSelector(props) {
     // }
 
     //const regions = Object.keys(regionCode);
+    // const  getKeyByValue = (object, value) => {
+    //     return Object.keys(object).find(key => object[key] === value);
+    // }
+
+    useEffect(() => {
+        if (loginState) {
+            console.log('true')
+            setloginInfoRegion(RegionCodeTranslate({code: loginInfo.region + loginInfo.subregion}));
+        }
+        else {
+            console.log('false')
+            setloginInfoRegion({
+                region: selectedRegion,
+            });
+        }
+    },[loginState]);
+
+    
+    
 
     const renderRegionOption = () => {
         for (let k in regionCode) {
@@ -713,9 +761,26 @@ function RegionSelector(props) {
     }
 
     const regionOption = (k, v) => {
-        return (
-            <option key={k} value={v}>{k}</option>
-        )
+        if (k === loginInfoRegion.regionName){
+            return (
+                <option selected key={k} value={v}>{k}</option>
+            )
+        }
+        else if (k === loginInfoRegion.cityName) {
+            return (
+                <option selected key={k} value={v}>{k}</option>
+            )
+        }
+        else if (k === loginInfoRegion.townName) {
+            return (
+                <option selected key={k} value={v}>{k}</option>
+            )
+        }
+        else {
+            return (
+                <option key={k} value={v}>{k}</option>
+            )
+        }        
     }
 
     const RenderSelectTown = () => {
@@ -723,7 +788,7 @@ function RegionSelector(props) {
         //setSelectCity(Object.keys(dtl_regionCode[selectRegion]));
         return (
             <select {...register("townArr")} onChange={(e) => setSelectTown(e.target.value)}>
-                    {Object.keys(dtl_regionCode[selectRegion][selectCity]).map(town => regionOption(town))}
+                    {Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
             </select>
         )
     }
@@ -733,8 +798,19 @@ function RegionSelector(props) {
         setSelectCity("");
     }
 
+    
+
 
     //const renderSelectBox = () => {
+
+    useEffect(() => {
+        if (typeof(loginInfoRegion.regionName) !== "undefined"  && typeof(loginInfoRegion.cityName) !== "undefined") {
+            setSelectRegion(loginInfoRegion.regionName);
+            setSelectCity(loginInfoRegion.cityName);
+        }
+        
+    },[loginInfoRegion, loginInfo]);
+
     return(
         <div className="selectbox">
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -742,11 +818,11 @@ function RegionSelector(props) {
                     {Object.keys(regionCode).map(region => regionOption(region))}
                 </select>
                 <select {...register("cityArr")} onChange={(e) => setSelectCity(e.target.value)}>
-                    {MetropolitanCity.includes(selectRegion) ?
+                    {MetropolitanCity.includes(selectedRegion) ?
                     <option key="none">군/구</option> : <option key="none">시/군/구</option> }   
-                    {Object.keys(dtl_regionCode[selectRegion]).map(city => regionOption(city))}
+                    {Object.keys(dtl_regionCode[selectedRegion]).map(city => regionOption(city))}
                 </select>
-                {MetropolitanCity.includes(selectRegion) || selectCity.length < 1  ?
+                {MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?
                 null : RenderSelectTown() }
                              
                 <input type="submit" value="결과보기" />

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from 'react-redux';
+import RegionCodeTranslate from './RegionCodeTranslate';
 import RenderMaps from "./Map";
 import "../style/BookList.scss";
 
 const default_Thumbnail = "https://bookthumb-phinf.pstatic.net/cover/069/862/06986295.jpg?type=m1&udate=20180918"
 
 const BookList = (props) => {
+    
+    const selectedRegion = useSelector(state => state.selectedRegion);
 
     const { book, i } = props;
 
@@ -12,6 +16,7 @@ const BookList = (props) => {
     // const[modalList, setList] = useState(1);
     const[clickList, setClickList] = useState(1);
     const[showDetail, setShowDetail] = useState(false);
+    const[currentRegion, setCurrentRegion] = useState({});
 
     const onClickfunc = (e) => {
         //setList(e);
@@ -32,11 +37,16 @@ const BookList = (props) => {
     };
 
     //console.log('props.bookslist', book);
-    useEffect(() => {
-        //console.log("props.bookslist",props.books);
-    }, [props.books]);
+    // useEffect(() => {
+    //     console.log("redux selRegion", selectedRegion.region, selectedRegion.subregion);
+        
+        
+    // }, []);
 
     const renderDetail = (book) => {
+        
+        let temp = RegionCodeTranslate({code: selectedRegion.region + selectedRegion.subregion});
+        console.log(RegionCodeTranslate({code: selectedRegion.region + selectedRegion.subregion}))
 
         return (
             <>
@@ -46,6 +56,7 @@ const BookList = (props) => {
                             <span>{book.description}</span>
                             <div className="LibraryInfo">
                                 <div className="LibraryDetailInfo">
+                                    <p>선택된 지역 : {temp.fullName}</p>
                                     <p>도서관 이름</p>
                                     <p>서울도서관</p>
                                     <p>도서관 정보</p>
