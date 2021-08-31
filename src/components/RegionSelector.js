@@ -737,18 +737,18 @@ function RegionSelector(props) {
     //     return Object.keys(object).find(key => object[key] === value);
     // }
 
-    useEffect(() => {
-        if (loginState) {
-            console.log('true')
-            setloginInfoRegion(RegionCodeTranslate({code: loginInfo.region + loginInfo.subregion}));
-        }
-        else {
-            console.log('false')
-            setloginInfoRegion({
-                region: selectedRegion,
-            });
-        }
-    },[loginState]);
+    // useEffect(() => {
+    //     if (loginState) {
+    //         console.log('true')
+    //         setloginInfoRegion(RegionCodeTranslate({code: loginInfo.region + loginInfo.subregion}));
+    //     }
+    //     else {
+    //         console.log('false')
+    //         setloginInfoRegion({
+    //             region: selectedRegion,
+    //         });
+    //     }
+    // },[loginState]);
 
     
     
@@ -761,26 +761,29 @@ function RegionSelector(props) {
     }
 
     const regionOption = (k, v) => {
-        if (k === loginInfoRegion.regionName){
-            return (
-                <option selected key={k} value={v}>{k}</option>
-            )
-        }
-        else if (k === loginInfoRegion.cityName) {
-            return (
-                <option selected key={k} value={v}>{k}</option>
-            )
-        }
-        else if (k === loginInfoRegion.townName) {
-            return (
-                <option selected key={k} value={v}>{k}</option>
-            )
-        }
-        else {
-            return (
-                <option key={k} value={v}>{k}</option>
-            )
-        }        
+        // if (k === loginInfoRegion.regionName){
+        //     return (
+        //         <option selected key={k} value={v}>{k}</option>
+        //     )
+        // }
+        // else if (k === loginInfoRegion.cityName) {
+        //     return (
+        //         <option selected key={k} value={v}>{k}</option>
+        //     )
+        // }
+        // else if (k === loginInfoRegion.townName) {
+        //     return (
+        //         <option selected key={k} value={v}>{k}</option>
+        //     )
+        // }
+        // else {
+        //     return (
+        //         <option key={k} value={v}>{k}</option>
+        //     )
+        // }    
+        return (
+            <option key={k} value={v}>{k}</option>
+        )    
     }
 
     const RenderSelectTown = () => {
@@ -803,13 +806,13 @@ function RegionSelector(props) {
 
     //const renderSelectBox = () => {
 
-    useEffect(() => {
-        if (typeof(loginInfoRegion.regionName) !== "undefined"  && typeof(loginInfoRegion.cityName) !== "undefined") {
-            setSelectRegion(loginInfoRegion.regionName);
-            setSelectCity(loginInfoRegion.cityName);
-        }
+    // useEffect(() => {
+    //     if (typeof(loginInfoRegion.regionName) !== "undefined"  && typeof(loginInfoRegion.cityName) !== "undefined") {
+    //         setSelectRegion(loginInfoRegion.regionName);
+    //         setSelectCity(loginInfoRegion.cityName);
+    //     }
         
-    },[loginInfoRegion, loginInfo]);
+    // },[loginInfoRegion, loginInfo]);
 
     return(
         <div className="selectbox">

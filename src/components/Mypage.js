@@ -56,6 +56,13 @@ function Mypage(props) {
                     setOpenMypage={props.setOpenMypage}
                 />
             </div>
+
+            <div className="SearchHistory">
+                <h2>검색기록</h2>
+                {
+                //books[page-1].map((book, i) => <BookList key={book.id} book={book} i={i} />)
+                }       
+            </div>
         </div>
     );
 

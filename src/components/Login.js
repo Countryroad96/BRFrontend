@@ -18,11 +18,17 @@ function Login(props) {
     const onSuccess = (res) => {
         let userInfo = {name: res.profileObj.name, 
                         sex: '0',
+                        age: "20",
                         region: "31",
                         subregion: "103",
                         imgURL: res.profileObj.imageUrl, 
                         username: String(res.profileObj.googleId),
-                        age: "20"};
+                        history: { bookId: "",
+                                    title: "",
+                                    author: "",
+                                    publisher: "",
+                                    ISBN: "",},
+                        };
 
         // axios.post(`${END_POINT}/login`,{username: userInfo.username})
         // .then((response) => {

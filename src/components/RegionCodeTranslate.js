@@ -640,7 +640,7 @@ function RegionCodeTranslate(props) {
         let cityNum2 = parseInt(props.code.substr(2,2),10) - 1;
         let townNum = props.code.substr(2,3);
 
-        console.log('cityNum2', cityNum2);
+        //console.log('cityNum2', cityNum2);
         
 
         let cityName = "";
