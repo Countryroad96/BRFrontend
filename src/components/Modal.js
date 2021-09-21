@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import ModalPortal from '../ModalPortal';
 import RenderMaps from "./Map";
 import "../style/Map.scss";
@@ -26,16 +26,29 @@ const Modal = (props) => {
             }
     },[]);
 
+    // const onClick = () => {
+    //     props.callback();
+    //     props.setModal(false);
+    // }
+
+    const onClick = useCallback(() => {
+        
+        if(props.callback !== null) {
+            props.callback();
+        }
+        props.setModal(false);
+    }, [props.callback, props.setModal]);
+
     return (
         <ModalPortal>
-            <div className="CloseCheckBox" onClick={props.clickoff ? () => props.setModal(false) : null}></div>
+            <div className="CloseCheckBox" onClick={props.clickoff ? onClick : null}></div>
             <div className="ModalBox">
                 <div className="content" ref={modalEl}>
                     <h3>{props.title}</h3>
-                    <p>내용입니다.</p>
+                    <p></p>
                     <p>{props.description}</p>
                     <div>
-                        <button onClick={() => {props.setModal(false);}} >닫기</button>
+                        <button onClick={onClick} >닫기</button>
                     </div>
                 </div>
             </div>

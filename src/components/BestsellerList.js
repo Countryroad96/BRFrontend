@@ -4,9 +4,11 @@ import BookList from "./BookList";
 import axios from 'axios';
 import "../style/BestsellerList.scss"
 
-const END_POINT = "/v1/search/book.json";
-const Client_ID = "6kzLim7jrHaqIQQcyTyH";
-const Client_PW = "TKnpNps3Gg";
+//const END_POINT = "/v1/search/book.json";
+const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+
+// const Client_ID = "6kzLim7jrHaqIQQcyTyH";
+// const Client_PW = "TKnpNps3Gg";
 
 function Bestseller() {
 
@@ -29,30 +31,34 @@ function Bestseller() {
                         336, 112011, 1237, 2030, 1137]
 
     const getBestseller = async (props) => {
+        setBook([]);
         setLoadingState(true);
         console.log("code", genreCode[bestsellerGenre.indexOf(props.genre)]);
         try{
-            const res = await axios.get(END_POINT, {
+            const res = await axios.get(`${END_POINT}/bestseller`, {
                 params: {
-                    query: props.genre,
-                    display: display*10
+                    //query: props.genre,
+                    //display: display*10
+                    code: genreCode[bestsellerGenre.indexOf(props.genre)],
                 },
-                headers: {
-                    "X-Naver-Client-Id": Client_ID,
-                    "X-Naver-Client-Secret": Client_PW
-                }
+                // headers: {
+                //     "X-Naver-Client-Id": Client_ID,
+                //     "X-Naver-Client-Secret": Client_PW
+                // }
             });
-            //console.log(res.data);
-            const booklist = res.data.items.map((item, index) => ({
+            console.log(res.data);
+            const booklist = res.data.info.bookList.map((item, index) => ({
                     id: index,
-                    title: (index+1+". ")+item.title.replace(/(<([^>]+)>)/ig,""),
+                    rank: item.rank,
+                    title: item.title.replace(/(<([^>]+)>)/ig,""),
                     image: item.image,
                     author: item.author.replace(/(<([^>]+)>)/ig,""),
                     isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
-                    year: item.pubdate.replace(/(<([^>]+)>)/ig,""),
-                    description: item.description.replace(/(<([^>]+)>)/ig,""),
+                    //year: item.pubdate.replace(/(<([^>]+)>)/ig,""),
+                    //description: item.description.replace(/(<([^>]+)>)/ig,""),
                     publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
-                    link: item.link
+                    //link: item.link
+                    
                 })
             );
             
@@ -98,12 +104,23 @@ function Bestseller() {
 
     const RenderGenre = (props) => {
         //console.log(props);
-        return (
-            <>
-                <span onClick={() => onClickGenre(props)}>{props.genre}</span>
-                {(props.i%11) < 10 ? <span>, </span> : <br></br>}
-            </>
-        )
+        if (searchGenre === props.genre) {
+            return (
+                <>
+                    <span className="GenreSelected" onClick={() => onClickGenre(props)}>{props.genre}</span>
+                    {(props.i%11) < 10 ? <span>, </span> : <br></br>}
+                </>
+            );
+        }
+        else {
+            return (
+                <>
+                    <span onClick={() => onClickGenre(props)}>{props.genre}</span>
+                    {(props.i%11) < 10 ? <span>, </span> : <br></br>}
+                </>
+            );
+        }
+        
     }
 
     const selectBestsellerGenre = () => {
@@ -121,7 +138,7 @@ function Bestseller() {
             <h2>{searchGenre} 베스트 셀러</h2>
             {selectBestsellerGenre()}
             <h2 style={{textAlign: 'center'}}>{loadingState && books.length === 0 ? "Loading..." : null}</h2>
-            {books.map((book, i) => <BookList key={book.id} book={book} i={i} />)}
+            {books.map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false}/>)}
         </div>
     )
 }

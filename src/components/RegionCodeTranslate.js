@@ -635,39 +635,50 @@ function RegionCodeTranslate(props) {
                         '세종특별자치시'];
 
 
-        let regionNum = props.code.substr(0,2);
-        let cityNum = props.code.substr(2,3);
-        let cityNum2 = parseInt(props.code.substr(2,2),10) - 1;
-        let townNum = props.code.substr(2,3);
-
-        //console.log('cityNum2', cityNum2);
-        
-
-        let cityName = "";
-        let townName = "";
-
-        let regionName = Object.keys(regionCode).find(key => regionCode[key] === regionNum);
-
-        //console.log(Object.keys(dtl_regionCode[regionName]));
-
-        if (MetropolitanCity.includes(regionName)) {
-            cityName = Object.keys(dtl_regionCode[regionName]).find(key => dtl_regionCode[regionName][key] === cityNum);
-            return ({
-                fullName: regionName + " " + cityName,
-                regionName: regionName,
-                cityName: cityName,
-                });
+        if (props.code === ""){
+            return({
+                fullName: "미설정",
+                regionName: "미설정",
+                cityName: "미설정",
+                townName: "미설정",
+            })
         }
         else {
-            cityName = Object.keys(dtl_regionCode[regionName])[cityNum2];
-            townName = Object.keys(dtl_regionCode[regionName][cityName]).find(key => dtl_regionCode[regionName][cityName][key] === townNum);
-            return ({
-                fullName: regionName + " " + cityName + " " + townName,
-                regionName: regionName,
-                cityName: cityName,
-                townName: townName,
-            });
+            let regionNum = props.code.substr(0,2);
+            let cityNum = props.code.substr(2,3);
+            let cityNum2 = parseInt(props.code.substr(2,2),10) - 1;
+            let townNum = props.code.substr(2,3);
+
+            //console.log('cityNum2', cityNum2);
+            
+
+            let cityName = "";
+            let townName = "";
+
+            let regionName = Object.keys(regionCode).find(key => regionCode[key] === regionNum);
+
+            //console.log(Object.keys(dtl_regionCode[regionName]));
+        
+            if (MetropolitanCity.includes(regionName)) {
+                cityName = Object.keys(dtl_regionCode[regionName]).find(key => dtl_regionCode[regionName][key] === cityNum);
+                return ({
+                    fullName: regionName + " " + cityName,
+                    regionName: regionName,
+                    cityName: cityName,
+                    });
+            }
+            else {
+                cityName = Object.keys(dtl_regionCode[regionName])[cityNum2];
+                townName = Object.keys(dtl_regionCode[regionName][cityName]).find(key => dtl_regionCode[regionName][cityName][key] === townNum);
+                return ({
+                    fullName: regionName + " " + cityName + " " + townName,
+                    regionName: regionName,
+                    cityName: cityName,
+                    townName: townName,
+                });
+            }
         }
+        
         //console.log('result', result);
     //},[]);
 

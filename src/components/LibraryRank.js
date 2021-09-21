@@ -4,9 +4,21 @@ import BookList from "./BookList";
 import axios from 'axios';
 import "../style/BestsellerList.scss"
 
-const END_POINT = "/v1/search/book.json";
-const Client_ID = "6kzLim7jrHaqIQQcyTyH";
-const Client_PW = "TKnpNps3Gg";
+const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+
+// const END_POINT = "/v1/search/book.json";
+// const Client_ID = "6kzLim7jrHaqIQQcyTyH";
+// const Client_PW = "TKnpNps3Gg";
+
+function leftPad(value) { if (value >= 10) { return value; } return `0${value}`; }
+
+let deftoday = new Date();
+    let today1 = new Date();
+    let defTemp = new Date(today1.setMonth(today1.getMonth()-3));
+    let endDate = `${deftoday.getFullYear()}-${leftPad(deftoday.getMonth() + 1)}-${leftPad(deftoday.getDate())}`;
+    const defaultTerm = { startdate:  `${defTemp.getFullYear()}-${leftPad(defTemp.getMonth() + 1)}-${leftPad(defTemp.getDate())}`,
+                                enddate: `${deftoday.getFullYear()}-${leftPad(deftoday.getMonth() + 1)}-${leftPad(deftoday.getDate())}`};
+
 
 function LibraryRank() {
 
@@ -18,10 +30,10 @@ function LibraryRank() {
     const [display, setDisplay] = useState(10);
     //const [searchState, setSearchState] = useState(false);
     const [searchGenre, setSearchGenre] = useState("전체");
-    const [searchTerm, setSearchTerm] = useState({});
+    const [searchTerm, setSearchTerm] = useState(defaultTerm);
     const [selected, setSelected] = useState("3개월");
 
-    //const loginInfo = useSelector(state => state.updateLoginState.user);
+    const loginInfo = useSelector(state => state.updateLoginState.user);
 
 
     const rankGenre = ["전체", "철학", "종교", "사회과학", "자연과학",
@@ -29,40 +41,45 @@ function LibraryRank() {
     
     const genreCode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-    let deftoday = new Date();
-    let today1 = new Date();
-    let defTemp = new Date(today1.setMonth(today1.getMonth()-3));
-    const defaultTerm = { startdate:  `${defTemp.getFullYear()}-${defTemp.getMonth() + 1}-${defTemp.getDate()}`,
-                            enddate: `${deftoday.getFullYear()}-${deftoday.getMonth() + 1}-${deftoday.getDate()}`};
-    useEffect(() => {setSearchTerm(defaultTerm);}, [])
-
+    
     
 
     const getLibraryRank = async (props) => {
+
+        //setSearchTerm(defaultTerm);
+
+        setBook([]);
         setLoadingState(true);
         console.log("code", genreCode[rankGenre.indexOf(props.genre)]);
+        //console.log("dfT", defaultTerm);
+        console.log("term", searchTerm);
         try{
-            const res = await axios.get(END_POINT, {
+            const res = await axios.get(`${END_POINT}/library`, {
                 params: {
-                    query: props.genre,
-                    display: display*10
+                    // query: props.genre,
+                    // display: display*10
+                    startdate: searchTerm.startdate,
+                    enddate: searchTerm.enddate,
+                    age: loginInfo.age,
+                    code: genreCode[rankGenre.indexOf(props.genre)],
                 },
-                headers: {
-                    "X-Naver-Client-Id": Client_ID,
-                    "X-Naver-Client-Secret": Client_PW
-                }
+                // headers: {
+                //     "X-Naver-Client-Id": Client_ID,
+                //     "X-Naver-Client-Secret": Client_PW
+                // }
             });
-            //console.log(res.data);
-            const booklist = res.data.items.map((item, index) => ({
+            console.log(res.data);
+            const booklist = res.data.info.result.map((item, index) => ({
                     id: index,
-                    title: (index+1+". ")+item.title.replace(/(<([^>]+)>)/ig,""),
+                    rank: item.rank,
+                    title: item.title.replace(/(<([^>]+)>)/ig,""),
                     image: item.image,
                     author: item.author.replace(/(<([^>]+)>)/ig,""),
                     isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
-                    year: item.pubdate.replace(/(<([^>]+)>)/ig,""),
-                    description: item.description.replace(/(<([^>]+)>)/ig,""),
+                    year: item.year.replace(/(<([^>]+)>)/ig,""),
+                    //description: item.description.replace(/(<([^>]+)>)/ig,""),
                     publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
-                    link: item.link
+                    //link: item.link
                 })
             );
             
@@ -138,33 +155,35 @@ function LibraryRank() {
             switch (e.target.value) {
                 case "1주" :
                     let temp1 = new Date(today.setDate(today.getDate()-7));
-                    const term1 = { startdate:  `${temp1.getFullYear()}-${temp1.getMonth() + 1}-${temp1.getDate()}`,
-                                    enddate: `${deftoday.getFullYear()}-${deftoday.getMonth() + 1}-${deftoday.getDate()}`};
+                    const term1 = { startdate:  `${leftPad(temp1.getFullYear())}-${leftPad(temp1.getMonth() + 1)}-${leftPad(temp1.getDate())}`,
+                                    enddate: endDate};
                     setSearchTerm(term1);
                     break;
                 case "1개월" :
                     let temp2 = new Date(today.setMonth(today.getMonth()-1));
-                    const term2 = { startdate:  `${temp2.getFullYear()}-${temp2.getMonth() + 1}-${temp2.getDate()}`,
-                                    enddate: `${deftoday.getFullYear()}-${deftoday.getMonth() + 1}-${deftoday.getDate()}`};
+                    const term2 = { startdate:  `${leftPad(temp2.getFullYear())}-${leftPad(temp2.getMonth() + 1)}-${leftPad(temp2.getDate())}`,
+                                    enddate: endDate};
                     setSearchTerm(term2);
                     break;
                 case "3개월" :
                     let temp3 = new Date(today.setMonth(today.getMonth()-3));
-                    const term3 = { startdate:  `${temp3.getFullYear()}-${temp3.getMonth() + 1}-${temp3.getDate()}`,
-                                    enddate: `${deftoday.getFullYear()}-${deftoday.getMonth() + 1}-${deftoday.getDate()}`};
+                    const term3 = { startdate:  `${leftPad(temp3.getFullYear())}-${leftPad(temp3.getMonth() + 1)}-${leftPad(temp3.getDate())}`,
+                                    enddate: endDate};
                     setSearchTerm(term3);
                     break;
                 case "6개월" :
                     let temp4 = new Date(today.setMonth(today.getMonth()-6));
-                    const term4 = { startdate:  `${temp4.getFullYear()}-${temp4.getMonth() + 1}-${temp4.getDate()}`,
-                                    enddate: `${deftoday.getFullYear()}-${deftoday.getMonth() + 1}-${deftoday.getDate()}`};
+                    const term4 = { startdate:  `${leftPad(temp4.getFullYear())}-${leftPad(temp4.getMonth() + 1)}-${leftPad(temp4.getDate())}`,
+                                    enddate: endDate};
                     setSearchTerm(term4);
                     break;
                 case "1년" :
                     let temp5 = new Date(today.setFullYear(today.getFullYear()-1));
-                    const term5 = { startdate:  `${temp5.getFullYear()}-${temp5.getMonth() + 1}-${temp5.getDate()}`,
-                                    enddate: `${deftoday.getFullYear()}-${deftoday.getMonth() + 1}-${deftoday.getDate()}`};
+                    const term5 = { startdate:  `${leftPad(temp5.getFullYear())}-${leftPad(temp5.getMonth() + 1)}-${leftPad(temp5.getDate())}`,
+                                    enddate: endDate};
                     setSearchTerm(term5);
+                    break;
+                default:
             }
         }
 
@@ -181,6 +200,7 @@ function LibraryRank() {
         )
     }
 
+    //useEffect(() => {}, [])
     useEffect(() => {getLibraryRank({genre: searchGenre});},[searchGenre, searchTerm]);
 
     return (
@@ -189,7 +209,7 @@ function LibraryRank() {
             {selectRankGenre()}
             <SelectTerm />
             <h2 style={{textAlign: 'center'}}>{loadingState && books.length === 0 ? "Loading..." : null}</h2>
-            {books.map((book, i) => <BookList key={book.id} book={book} i={i} />)}
+            {books.map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false} />)}
         </div>
     )
 }

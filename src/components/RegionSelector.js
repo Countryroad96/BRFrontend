@@ -659,6 +659,7 @@ function RegionSelector(props) {
     const { register, handleSubmit } = useForm();
 
     const onSubmit = (data) => {
+        //data.preventDefault();
         REGION_VALUE = data.regionArr;
         CITY_VALUE = data.cityArr;
         TOWN_VALUE = data.townArr;
@@ -683,7 +684,7 @@ function RegionSelector(props) {
                 };
         
                 if (props.changeLoginstate) {
-                    dispatch(props.onSubmit(newloginInfo))
+                    dispatch(updateUserInfo(newloginInfo))
                 };
                 if(props.setRegion) {
                     console.log('temp', temp);
@@ -705,7 +706,7 @@ function RegionSelector(props) {
                 };
 
                 if(props.changeLoginstate) {
-                    dispatch(props.onSubmit(newloginInfo))
+                    dispatch(updateUserInfo(newloginInfo))
                 };
                 if(props.setRegion) {
                     console.log('temp', temp);
@@ -761,26 +762,6 @@ function RegionSelector(props) {
     }
 
     const regionOption = (k, v) => {
-        // if (k === loginInfoRegion.regionName){
-        //     return (
-        //         <option selected key={k} value={v}>{k}</option>
-        //     )
-        // }
-        // else if (k === loginInfoRegion.cityName) {
-        //     return (
-        //         <option selected key={k} value={v}>{k}</option>
-        //     )
-        // }
-        // else if (k === loginInfoRegion.townName) {
-        //     return (
-        //         <option selected key={k} value={v}>{k}</option>
-        //     )
-        // }
-        // else {
-        //     return (
-        //         <option key={k} value={v}>{k}</option>
-        //     )
-        // }    
         return (
             <option key={k} value={v}>{k}</option>
         )    
@@ -827,8 +808,8 @@ function RegionSelector(props) {
                 </select>
                 {MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?
                 null : RenderSelectTown() }
-                             
-                <input type="submit" value="결과보기" />
+
+                <input type="submit" value="지역선택" />
             </form>
         </div>
         

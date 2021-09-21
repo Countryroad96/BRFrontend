@@ -6,7 +6,7 @@ export const selectRegion = createAction(SELECT_REGION, item => item);
 
 const initialState = {
     region: "11",
-    subregion: "",
+    subregion: "010",
 };
 
 const selectedRegion = handleActions(

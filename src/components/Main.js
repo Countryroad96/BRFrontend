@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import axios from "axios";
 import Bestseller from "./BestsellerList";
@@ -11,10 +11,13 @@ import Logout from './Logout';
 import "../style/Main.scss";
 
 import RegionSelector from './RegionSelector';
+import { selectRegion } from '../modules/SelectedRegionCode';
 
-const END_POINT = "/v1/search/book.json";
-const Client_ID = "6kzLim7jrHaqIQQcyTyH";
-const Client_PW = "TKnpNps3Gg";
+// const END_POINT = "/v1/search/book.json";
+// const Client_ID = "6kzLim7jrHaqIQQcyTyH";
+// const Client_PW = "TKnpNps3Gg";
+
+const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080"
 
 function Main() {
 
@@ -28,37 +31,62 @@ function Main() {
     // const [loginInfo, setLoginInfo] = useState({});
     // const [loginState, setLoginState] = useState(false);
     const [openMypage, setOpenMypage] = useState(false);
+    const [showRankBest, setShowRankBest] = useState(true);
     const [openRegionSelector, setOpenRegionSelector] = useState(false);
 
     const loginState = useSelector(state => state.updateLoginState.login);
     const loginInfo = useSelector(state => state.updateLoginState.user);
 
+    const selectedRegionCode = useSelector(state => state.selectedRegion);
+    const region = RegionCodeTranslate({code: `${selectedRegionCode.region + selectedRegionCode.subregion}`});
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (loginInfo.status === "new") {
+            setOpenMypage(true);
+            setShowRankBest(false);
+        }
+    },[loginInfo]);
 
 
     const getSearchBook = async () => {
         try{
-            const res = await axios.get(END_POINT, {
+            const res = await axios.get(`${END_POINT}/search`, {
                 params: {
                     query: searchText,
-                    display: display*10
+                    // query: searchText,
+                    // display: display*10
                 },
-                headers: {
-                    "X-Naver-Client-Id": Client_ID,
-                    "X-Naver-Client-Secret": Client_PW
-                }
+                // headers: {
+                //     "X-Naver-Client-Id": Client_ID,
+                //     "X-Naver-Client-Secret": Client_PW
+                // }
             });
-            //console.log(res.data);
-            const booklist = res.data.items.map((item, index) => ({
-                    id: index,
-                    title: item.title.replace(/(<([^>]+)>)/ig,""),
-                    image: item.image,
-                    author: item.author.replace(/(<([^>]+)>)/ig,""),
-                    isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
-                    year: item.pubdate.replace(/(<([^>]+)>)/ig,""),
-                    description: item.description.replace(/(<([^>]+)>)/ig,""),
-                    publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
-                    link: item.link
-                })
+            console.log(res.data);
+            // const booklist = res.data.items.map((item, index) => ({
+            //         id: index,
+            //         title: item.title.replace(/(<([^>]+)>)/ig,""),
+            //         image: item.image,
+            //         author: item.author.replace(/(<([^>]+)>)/ig,""),
+            //         isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
+            //         year: item.pubdate.replace(/(<([^>]+)>)/ig,""),
+            //         description: item.description.replace(/(<([^>]+)>)/ig,""),
+            //         publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
+            //         link: item.link
+            //     })
+            // );
+
+            const booklist = res.data.info.result.map((item, index) => ({
+                id: index,
+                title: item.title.replace(/(<([^>]+)>)/ig,""),
+                image: item.image,
+                author: item.author.replace(/(<([^>]+)>)/ig,""),
+                isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
+                year: item.year.replace(/(<([^>]+)>)/ig,""),
+                description: item.description.replace(/(<([^>]+)>)/ig,""),
+                publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
+            })
             );
             
             let testlist = [];
@@ -91,7 +119,7 @@ function Main() {
             //setBook({books: testlist, finish: true});
             setTotalPage(totalpage);
             setBook(testlist);
-            setSearchState(true)
+            setSearchState(true);
 
             //console.log("res.data",res.data);
             //console.log("testlist",testlist);
@@ -110,6 +138,7 @@ function Main() {
         setOpenMypage(false);
         setBook([]);
         setSearchState(false);
+        setShowRankBest(false);
         setPage(1);
         getSearchBook();
         setTotalPage(0);
@@ -125,6 +154,7 @@ function Main() {
         setOpenMypage(false);
         setBook([]);
         setSearchState(false);
+        setShowRankBest(true);
         setPage(1);
         setTotalPage(0);
     }
@@ -132,7 +162,7 @@ function Main() {
     const renderSearchlist = () => {
         return (
             <div className="SearchList">
-                {books[page-1].map((book, i) => <BookList key={book.id} book={book} i={i} />)}
+                {books[page-1].map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false}/>)}
             </div>
         )
     }
@@ -148,7 +178,7 @@ function Main() {
         for (let i = 0; i < totalPage; i++){
             pagelist.push(i+1);
         }
-        console.log('maxpage',totalPage);
+        //console.log('maxpage',totalPage);
         if (totalPage > 1){
             return (
                 <div className="SearchPager">  
@@ -163,6 +193,7 @@ function Main() {
         setPage(1);
         setTotalPage(0);
         setSearchState(false);
+        setShowRankBest(false);
         setOpenMypage(true);
     }
 
@@ -181,7 +212,7 @@ function Main() {
 
     const renderMypage = () => {
         return (
-            <Mypage setOpenMypage={setOpenMypage} />
+            <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} />
         )
     }
 
@@ -194,10 +225,17 @@ function Main() {
         }
     }
 
+    const onClickRegionReset = () => {
+        dispatch(selectRegion({
+            region: loginInfo.region,
+            subregion: loginInfo.subregion,
+        }))
+    }
+
     return (
             <div className="SiteFrame">
                 <div className="SiteHead">
-                    <div className="SiteName" onClick={onClickHomepage}>책 추천 사이트 테스트</div>
+                    <div className="SiteName" onClick={onClickHomepage}>도서 추천 및 정보 제공 사이트</div>
                     <div className="Input">
                         <input
                             className="InputBar"
@@ -212,11 +250,18 @@ function Main() {
                             onClick={onSubmit}>검색</button>
                     </div>
                     <div className="SearchRegionSelector">
-                        <span onClick={onClickOpReSel}>검색지역선택</span>
+                        <span onClick={onClickOpReSel}>도서관검색지역선택</span><br/>
+                        
                         {openRegionSelector ? 
-                        <RegionSelector changeLoginstate={false} setRegion={true}/> : null}
+                        <>
+                        <span>현재검색지역 : {region.fullName}</span><br/>
+                        <RegionSelector changeLoginstate={false} setRegion={true}/>
+                        <button className="RegionResetButton" onClick={onClickRegionReset}>초기화</button>
+                        </>: null}
                     </div>
                         {loginState ? renderUserInfo() : <Login 
+                        setOpenMypage={setOpenMypage}
+
                         // setLoginInfo={setLoginInfo}
                         // setLoginState={setLoginState}
                         />}
@@ -224,7 +269,7 @@ function Main() {
                 <div className="SiteBody">
                     {openMypage ? renderMypage() : null}
                     {(searchState) ? renderSearchlist() : null}
-                    {(searchState || openMypage) ? null : (loginState ? <LibraryRank /> : <Bestseller />)}
+                    {showRankBest ? (loginState ? <LibraryRank /> : <Bestseller />) : null}
                     {(searchState) ? renderButton() : null}
                 </div>
             </div>

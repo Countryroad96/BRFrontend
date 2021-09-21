@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useCallback, useState } from "react";
 //import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
@@ -7,6 +8,8 @@ import { selectRegion } from '../modules/SelectedRegionCode';
 import Modal from "./Modal.js";
 
 const clientId = "323793340670-isvcim8icgebo1juvq01iimrqohprd97.apps.googleusercontent.com"
+const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+// 113948232183335871665
 
 function Login(props) {
 
@@ -14,55 +17,95 @@ function Login(props) {
 
     const[modal, setModal] = useState(false);
     const[modalInfo, setModalInfo] = useState({});
+    const [loadingState, setLoadingState] = useState(false);
     
-    const onSuccess = (res) => {
-        let userInfo = {name: res.profileObj.name, 
-                        sex: '0',
-                        age: "20",
-                        region: "31",
-                        subregion: "103",
-                        imgURL: res.profileObj.imageUrl, 
-                        username: String(res.profileObj.googleId),
-                        history: { bookId: "",
-                                    title: "",
-                                    author: "",
-                                    publisher: "",
-                                    ISBN: "",},
-                        };
+    const onSuccess = async (googleRes) => {
+        setLoadingState(true);
+        try {
+            const res = await axios.post(`${END_POINT}/login`, JSON.stringify({username: String(googleRes.profileObj.googleId)}), {
+                headers: {
+                    "Content-Type": `application/json`,
+                },
+            });
+            console.log("loginstate",res.data);
 
-        // axios.post(`${END_POINT}/login`,{username: userInfo.username})
-        // .then((response) => {
-        //     //Object.assign(userInfo, response.data);
-        //     userInfo = {...userInfo, _id: response.data._id}
-        //     const text = response.data.stt
-        //     let textList = []
-        //     for(const t of text) {
-        //         const item = {
-        //             id : t._id,
-        //             text : t.text
-        //         };
-        //         textList.push(item)
-        //     }
-        //     refreshTokenSetup(res);
+            let userInfo = {};
 
-        console.log("Login Info",userInfo);
-        //props.setLoginInfo(userInfo);
+            if (res.data.message === "registered") {
+                userInfo = {name: googleRes.profileObj.name, 
+                    gender: res.data.info.gender,
+                    age: res.data.info.age,
+                    region: (res.data.info.region === "" ? "11" : res.data.info.region),
+                    subregion: (res.data.info.subregion === "" ? "010" : res.data.info.subregion),
+                    imgURL: googleRes.profileObj.imageUrl, 
+                    username: String(googleRes.profileObj.googleId),
+                    history: res.data.info.history,
+                    status: "registered"
+                };
 
-        // setModalInfo({
-        //     title: "Login Success",
-        //     description: `Welcome ${userInfo.name}`,
-        //     clickoff: true
-        // });
-        // setModal(true);
+                console.log("Login Info",userInfo);
+                
+                //props.setLoginInfo(userInfo);
+        
+                // setModalInfo({
+                //     title: "Login Success",
+                //     description: `Welcome ${userInfo.name}`,
+                //     clickoff: true,
+                //     callback: props.setLoginState(true)
+                // });
+                // setModal(true);
+        
+                
+        
+                dispatch(updateLogin(userInfo));
+                dispatch(selectRegion({
+                    region: userInfo.region,
+                    subregion: userInfo.subregion,
+                }));
+                setLoadingState(false);
+            }
+            else if (res.data.message === "new") {
+                userInfo = {
+                    name: googleRes.profileObj.name, 
+                    gender: '2',
+                    age: "-1",
+                    region: "11",
+                    subregion: "010",
+                    imgURL: googleRes.profileObj.imageUrl, 
+                    username: String(googleRes.profileObj.googleId),
+                    history: [],
+                    status: "new"
+                };
+                console.log("Login Info",userInfo);
 
-        //props.setLoginState(true);
+                alert("신규회원입니다. 회원정보를 입력해주세요.");
 
-        dispatch(updateLogin(userInfo));
-        dispatch(selectRegion({
-            region: userInfo.region,
-            subregion: userInfo.subregion,
-        }));
-    }
+                setLoadingState(false);
+                // setModalInfo({
+                //     title: "신규가입회원",
+                //     description: "회원정보를 등록해주세요!",
+                //     clickoff: false,
+                //     callback: dispatch(updateLogin(userInfo))
+                // });
+                // setModal(true);
+                dispatch(updateLogin(userInfo))
+                //props.setLoginState(true);
+                
+            }
+            else {
+                console.log('error, res:', res);
+            };
+            
+        }
+        catch (error) {
+            console.log(error);
+        }
+    };
+
+    // const loginCallback = () => {
+    //     dispatch(updateLogin(userInfo));
+    //     //props.setLoginState(true)
+    // }
     
     //로그인 실패시 실행
     const onFailure = (res) => {
@@ -71,10 +114,13 @@ function Login(props) {
         setModalInfo({
             title: "Login Fail",
             description: res.error,
-            clickoff: true
+            clickoff: true,
+            callback: null
         });
         setModal(true);
     }
+
+    
 
     return (
         <div className='GoogleLoginButton'>
@@ -89,8 +135,13 @@ function Login(props) {
                 setModal={setModal} 
                 title={modalInfo.title}
                 description={modalInfo.description}
-                clickoff={false}
+                clickoff={modalInfo.clickoff}
+                callback={modalInfo.callback}
+                setOpenMypage={props.setOpenMypage}
+                setShowRankBest={props.setShowRankBest}
+                dispatch={dispatch}
             /> : null}
+            {loadingState ? null : null}
         </div>
     );
 }

@@ -16,6 +16,7 @@ function Logout(props) {
         // props.setLoginInfo({});
         // props.setLoginState(false);
         props.setOpenMypage(false);
+        props.setShowRankBest(true);
         dispatch(updateLogout());
 
     };
