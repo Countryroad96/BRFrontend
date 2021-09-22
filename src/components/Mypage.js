@@ -4,14 +4,14 @@ import { useForm } from 'react-hook-form';
 import { updateUserInfo, updateLogout } from '../modules/LoginState';
 import { selectRegion } from '../modules/SelectedRegionCode';
 import BookList from './BookList';
-import RegionSelector from './RegionSelector';
+//import RegionSelector from './RegionSelector';
 import RegionCodeTranslate from './RegionCodeTranslate';
 import Logout from './Logout';
 import axios from 'axios';
 import Modal from "./Modal.js";
 import "../style/Mypage.scss"
 
-const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 function Mypage(props) {
     
@@ -24,8 +24,8 @@ function Mypage(props) {
     const [selectedAge, setSelectedAge] = useState(loginInfo.age);
     const [selectedRegion, setSelectRegion] = useState("서울특별시");
     const [selectedCity, setSelectCity] = useState("");
-    const [selectTown, setSelectTown] = useState("");
-    const [loadingState, setLoadingState] = useState(false);
+    //const [selectTown, setSelectTown] = useState("");
+    //const [loadingState, setLoadingState] = useState(false);
     const[modal, setModal] = useState(false);
     const[modalInfo, setModalInfo] = useState({});
 
@@ -54,13 +54,13 @@ function Mypage(props) {
         if (loginInfo.status !== "registered") {
             setEditState(true);
         }
-    },[]);
+    },[loginInfo]);
 
     const region = RegionCodeTranslate({code: `${loginInfo.region + loginInfo.subregion}`});
-    console.log(region);
+    //console.log(region);
 
     const renderUser = () => {
-        console.log("userInfo", loginInfo);
+        //console.log("userInfo", loginInfo);
         return(
             <div className="UserInfo">
                 <span>성별 : {gender[loginInfo.gender]}</span>
@@ -95,13 +95,13 @@ function Mypage(props) {
 
             if (selectedCity !== "군/구" && selectedCity !== "시/군/구" && selectedCity.length > 0){
                 if (MetropolitanCity.includes(REGION_VALUE)){
-                    console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
+                    //console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
                     regiont = regionCode[REGION_VALUE];
                     subregiont = dtl_regionCode[REGION_VALUE][CITY_VALUE];
                 }
                 else{
-                    console.log(regionCode[REGION_VALUE]
-                                + dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
+                    //console.log(regionCode[REGION_VALUE]
+                    //            + dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
                     regiont = regionCode[REGION_VALUE];
                     subregiont = dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE];
                 }
@@ -120,7 +120,7 @@ function Mypage(props) {
                                 "Content-Type": `application/json`,
                             },
                         }).then((res) => {
-                            console.log("update",res.data);
+                            //console.log("update",res.data);
                             setEditState(false)
                             setModalInfo({
                                 title: "회원정보수정 성공",
@@ -132,7 +132,7 @@ function Mypage(props) {
                         })
                         
         
-                        setLoadingState(false);
+                        //setLoadingState(false);
                         // setModalInfo({
                         //     title: "회원정보수정 성공",
                         //     description: "회원정보 수정에 성공하였습니다.",
@@ -172,7 +172,7 @@ function Mypage(props) {
             
             
             //setLoadingState(true);
-            console.log("sendInfo", newloginInfo);
+            //console.log("sendInfo", newloginInfo);
         }
 
         const regionCode = {
@@ -804,12 +804,12 @@ function Mypage(props) {
         const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '울산광역시',
                             '세종특별자치시'];
 
-        const renderRegionOption = () => {
-            for (let k in regionCode) {
-                const v = regionCode[k];
-                regionOption(k, v);
-            }
-        }
+        // const renderRegionOption = () => {
+        //     for (let k in regionCode) {
+        //         const v = regionCode[k];
+        //         regionOption(k, v);
+        //     }
+        // }
     
         const regionOption = (k, v) => {
             return (
@@ -821,7 +821,7 @@ function Mypage(props) {
             //console.log(Object.keys(dtl_regionCode[selectRegion])[0]);
             //setSelectCity(Object.keys(dtl_regionCode[selectRegion]));
             return (
-                <select {...register("townArr")} onChange={(e) => setSelectTown(e.target.value)}>
+                <select {...register("townArr")}>
                         {Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
                 </select>
             )
@@ -897,7 +897,7 @@ function Mypage(props) {
                     username: loginInfo.username
                 }
             }).then((res) => {
-                console.log("delete user",res.data);
+                //console.log("delete user",res.data);
                 props.setOpenMypage(false);
                 props.setShowRankBest(true);
                 dispatch(updateLogout());

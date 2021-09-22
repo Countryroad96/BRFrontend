@@ -1,12 +1,12 @@
 import { RenderAfterNavermapsLoaded, NaverMap, Marker } from "react-naver-maps";
 import "../style/Map.scss"
 
-const Naver_Client_ID = "rsz0mhfl25";
+const Naver_Client_ID = `${process.env.REACT_APP_NAVER_MAP_CLIENT_ID}`;
 
 function NaverMapAPI(props) {
     const navermaps = window.naver.maps;
 
-    console.log(props.location.latitude, props.location.longitude);
+    //console.log(props.location.latitude, props.location.longitude);
 
     return (
       <NaverMap

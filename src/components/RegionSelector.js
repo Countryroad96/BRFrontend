@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserInfo } from '../modules/LoginState';
 import { selectRegion } from '../modules/SelectedRegionCode';
-import RegionCodeTranslate from './RegionCodeTranslate';
+//import RegionCodeTranslate from './RegionCodeTranslate';
 import { useForm } from 'react-hook-form';
 
 
@@ -10,17 +10,17 @@ import { useForm } from 'react-hook-form';
 function RegionSelector(props) {
 
     const loginInfo = useSelector(state => state.updateLoginState.user);
-    const loginState = useSelector(state => state.updateLoginState.login);
+    //const loginState = useSelector(state => state.updateLoginState.login);
     const dispatch = useDispatch();
 
     
-    const [loginInfoRegion, setloginInfoRegion] = useState({});
+    //const [loginInfoRegion, setloginInfoRegion] = useState({});
     const [selectedRegion, setSelectRegion] = useState("서울특별시");
-    const [selectRegionCode, setSelectRegionCode] = useState("");
+    //const [selectRegionCode, setSelectRegionCode] = useState("");
     const [selectedCity, setSelectCity] = useState("");
-    const [selectCityCode, setSelectCityCode] = useState("");
-    const [selectTown, setSelectTown] = useState("");
-    const [selectTownCode, setSelectTownCode] = useState("");
+    //const [selectCityCode, setSelectCityCode] = useState("");
+    //const [selectTown, setSelectTown] = useState("");
+    //const [selectTownCode, setSelectTownCode] = useState("");
 
     const regionCode = {
         서울특별시: '11',
@@ -672,7 +672,7 @@ function RegionSelector(props) {
 
         if (selectedCity !== "군/구" && selectedCity !== "시/군/구" && selectedCity.length > 0){
             if (MetropolitanCity.includes(REGION_VALUE)){
-                console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
+                //console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
                 let newloginInfo = {
                     ...loginInfo,
                     region: regionCode[REGION_VALUE],
@@ -687,14 +687,14 @@ function RegionSelector(props) {
                     dispatch(updateUserInfo(newloginInfo))
                 };
                 if(props.setRegion) {
-                    console.log('temp', temp);
+                    //console.log('temp', temp);
                     dispatch(selectRegion(temp))
                 };
 
             }
             else{
-                console.log(regionCode[REGION_VALUE]
-                            + dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
+                //console.log(regionCode[REGION_VALUE]
+                //            + dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
                 let newloginInfo = {
                     ...loginInfo,
                     region: regionCode[REGION_VALUE],
@@ -709,7 +709,7 @@ function RegionSelector(props) {
                     dispatch(updateUserInfo(newloginInfo))
                 };
                 if(props.setRegion) {
-                    console.log('temp', temp);
+                    //console.log('temp', temp);
                     dispatch(selectRegion(temp))
                 };
             }       
@@ -754,12 +754,12 @@ function RegionSelector(props) {
     
     
 
-    const renderRegionOption = () => {
-        for (let k in regionCode) {
-            const v = regionCode[k];
-            regionOption(k, v);
-        }
-    }
+    // const renderRegionOption = () => {
+    //     for (let k in regionCode) {
+    //         const v = regionCode[k];
+    //         regionOption(k, v);
+    //     }
+    // }
 
     const regionOption = (k, v) => {
         return (
@@ -771,7 +771,7 @@ function RegionSelector(props) {
         //console.log(Object.keys(dtl_regionCode[selectRegion])[0]);
         //setSelectCity(Object.keys(dtl_regionCode[selectRegion]));
         return (
-            <select {...register("townArr")} onChange={(e) => setSelectTown(e.target.value)}>
+            <select {...register("townArr")} >
                     {Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
             </select>
         )

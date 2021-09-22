@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useSelector } from 'react-redux';
 import BookList from "./BookList";
 import axios from 'axios';
 import "../style/BestsellerList.scss"
 
-const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 // const END_POINT = "/v1/search/book.json";
 // const Client_ID = "6kzLim7jrHaqIQQcyTyH";
@@ -27,32 +27,33 @@ function LibraryRank() {
     const [books, setBook] = useState([]);
     //const [page, setPage] = useState(1);
     //const [totalPage, setTotalPage] = useState(0);
-    const [display, setDisplay] = useState(10);
+    const [display] = useState(10);
     //const [searchState, setSearchState] = useState(false);
     const [searchGenre, setSearchGenre] = useState("전체");
     const [searchTerm, setSearchTerm] = useState(defaultTerm);
     const [selected, setSelected] = useState("3개월");
 
+    const loginState = useSelector(state => state.updateLoginState.login);
     const loginInfo = useSelector(state => state.updateLoginState.user);
 
 
-    const rankGenre = ["전체", "철학", "종교", "사회과학", "자연과학",
-                        "기술과학", "예술", "언어", "문학", "역사"];
+    const rankGenre = useMemo(() => ["전체", "철학", "종교", "사회과학", "자연과학",
+                        "기술과학", "예술", "언어", "문학", "역사"],[]);
     
-    const genreCode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const genreCode = useMemo(() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],[]);
 
     
     
 
-    const getLibraryRank = async (props) => {
+    const getLibraryRank = useCallback( async (props) => {
 
         //setSearchTerm(defaultTerm);
 
         setBook([]);
         setLoadingState(true);
-        console.log("code", genreCode[rankGenre.indexOf(props.genre)]);
+        //console.log("code", genreCode[rankGenre.indexOf(props.genre)]);
         //console.log("dfT", defaultTerm);
-        console.log("term", searchTerm);
+        //console.log("term", searchTerm);
         try{
             const res = await axios.get(`${END_POINT}/library`, {
                 params: {
@@ -60,7 +61,7 @@ function LibraryRank() {
                     // display: display*10
                     startdate: searchTerm.startdate,
                     enddate: searchTerm.enddate,
-                    age: loginInfo.age,
+                    age: (loginState ? loginInfo.age : -1),
                     code: genreCode[rankGenre.indexOf(props.genre)],
                 },
                 // headers: {
@@ -68,7 +69,7 @@ function LibraryRank() {
                 //     "X-Naver-Client-Secret": Client_PW
                 // }
             });
-            console.log(res.data);
+            //console.log(res.data);
             const booklist = res.data.info.result.map((item, index) => ({
                     id: index,
                     rank: item.rank,
@@ -84,7 +85,7 @@ function LibraryRank() {
             );
             
             let testlist = [];
-            let totalpage = 0;
+            //let totalpage = 0;
             let k = 0;
             let temp = [];
 
@@ -99,23 +100,23 @@ function LibraryRank() {
 
             if (temp.length !== 0) {
                 testlist = temp;
-                totalpage++;
+                //totalpage++;
             }
     
             //setTotalPage(1);
             setBook(testlist);
             //setSearchState(true);
             setLoadingState(false);
-            console.log("term", searchTerm);
+            //console.log("term", searchTerm);
             //console.log("testlist",testlist);
         }
         catch (error) {
         console.log(error);
         }
-    };
+    },[display, genreCode, rankGenre, loginInfo, loginState, searchTerm]);
 
     const onClickGenre = (props) => {
-        console.log('props.genre',props.genre);
+        //console.log('props.genre',props.genre);
         if (props.genre !== searchGenre){
             setBook([]);
             setSearchGenre(props.genre);
@@ -125,12 +126,28 @@ function LibraryRank() {
 
     const RenderGenre = (props) => {
         //console.log(props);
-        return (
-            <>
-                <span onClick={() => onClickGenre(props)}>{props.genre}</span>
-                {(props.i%11) < 10 ? <span>, </span> : <br></br>}
-            </>
-        )
+        // return (
+        //     <>
+        //         <span onClick={() => onClickGenre(props)}>{props.genre}</span>
+        //         {(props.i%11) < 10 ? <span>, </span> : <br></br>}
+        //     </>
+        // )
+        if (searchGenre === props.genre) {
+            return (
+                <>
+                    <span className="GenreSelected" onClick={() => onClickGenre(props)}>{props.genre}</span>
+                    {(props.i%11) < 10 ? <span>, </span> : <br></br>}
+                </>
+            );
+        }
+        else {
+            return (
+                <>
+                    <span onClick={() => onClickGenre(props)}>{props.genre}</span>
+                    {(props.i%11) < 10 ? <span>, </span> : <br></br>}
+                </>
+            );
+        }
     }
 
     const selectRankGenre = () => {
@@ -201,7 +218,7 @@ function LibraryRank() {
     }
 
     //useEffect(() => {}, [])
-    useEffect(() => {getLibraryRank({genre: searchGenre});},[searchGenre, searchTerm]);
+    useEffect(() => {getLibraryRank({genre: searchGenre});},[getLibraryRank,searchGenre, searchTerm]);
 
     return (
         <div className="BestsellerList">

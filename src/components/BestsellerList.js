@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 //import { useSelector, useDispatch } from 'react-redux';
 import BookList from "./BookList";
 import axios from 'axios';
 import "../style/BestsellerList.scss"
 
 //const END_POINT = "/v1/search/book.json";
-const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 // const Client_ID = "6kzLim7jrHaqIQQcyTyH";
 // const Client_PW = "TKnpNps3Gg";
@@ -17,23 +17,23 @@ function Bestseller() {
     const [books, setBook] = useState([]);
     //const [page, setPage] = useState(1);
     //const [totalPage, setTotalPage] = useState(0);
-    const [display, setDisplay] = useState(10);
+    const [display] = useState(10);
     //const [searchState, setSearchState] = useState(false);
     const [searchGenre, setSearchGenre] = useState("종합");
 
     //const loginInfo = useSelector(state => state.updateLoginState.user);
 
-    const bestsellerGenre = ["종합", "가정/요리/뷰티", "건강/취미/레저", "경제경영", "고전", "과학", "만화",
+    const bestsellerGenre = useMemo(() => ["종합", "가정/요리/뷰티", "건강/취미/레저", "경제경영", "고전", "과학", "만화",
                             "사회과학", "소설/시/희곡", "어린이", "에세이", "여행", "역사", "예술/대중문화",
-                            "유아", "인문학", "자기계발", "장르소설", "종교/역학", "좋은부모", "청소년"];
+                            "유아", "인문학", "자기계발", "장르소설", "종교/역학", "좋은부모", "청소년"],[]);
     
-    const genreCode = [0, 1230, 55890, 170, 2105, 987, 2551, 798, 1, 1108, 55889, 1196, 74, 517, 13789, 656,
-                        336, 112011, 1237, 2030, 1137]
+    const genreCode = useMemo(()=> [0, 1230, 55890, 170, 2105, 987, 2551, 798, 1, 1108, 55889, 1196, 74, 517, 13789, 656,
+                        336, 112011, 1237, 2030, 1137],[]);
 
-    const getBestseller = async (props) => {
+    const getBestseller = useCallback( async (props) => {
         setBook([]);
         setLoadingState(true);
-        console.log("code", genreCode[bestsellerGenre.indexOf(props.genre)]);
+        //console.log("code", genreCode[bestsellerGenre.indexOf(props.genre)]);
         try{
             const res = await axios.get(`${END_POINT}/bestseller`, {
                 params: {
@@ -46,7 +46,7 @@ function Bestseller() {
                 //     "X-Naver-Client-Secret": Client_PW
                 // }
             });
-            console.log(res.data);
+            //console.log(res.data);
             const booklist = res.data.info.bookList.map((item, index) => ({
                     id: index,
                     rank: item.rank,
@@ -63,7 +63,7 @@ function Bestseller() {
             );
             
             let testlist = [];
-            let totalpage = 0;
+            //let totalpage = 0;
             let k = 0;
             let temp = [];
 
@@ -78,7 +78,7 @@ function Bestseller() {
 
             if (temp.length !== 0) {
                 testlist = temp;
-                totalpage++;
+                //totalpage++;
             }
     
             //setTotalPage(1);
@@ -91,10 +91,10 @@ function Bestseller() {
         catch (error) {
         console.log(error);
         }
-    };
+    },[bestsellerGenre, display, genreCode]);
 
     const onClickGenre = (props) => {
-        console.log('props.genre',props.genre);
+        //console.log('props.genre',props.genre);
         if (props.genre !== searchGenre){
             setBook([]);
             setSearchGenre(props.genre);
@@ -131,7 +131,7 @@ function Bestseller() {
         )
     }
 
-    useEffect(() => {getBestseller({genre: searchGenre});},[searchGenre]);
+    useEffect(() => {getBestseller({genre: searchGenre});},[searchGenre, getBestseller]);
 
     return (
         <div className="BestsellerList">

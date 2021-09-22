@@ -1,10 +1,6 @@
 import axios from 'axios';
-import { end } from 'cheerio/lib/api/traversing';
 
 const END_POINT = '/v1/search/book.json';
-const Client_ID = '6kzLim7jrHaqIQQcyTyH';
-const Client_PW = 'TKnpNps3Gg';
-const Search_Text = '해리포터';
 
 // 비동기 작업 함수
 export const getBestseller = (code) => {

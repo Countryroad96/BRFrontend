@@ -3,6 +3,12 @@
   margin: auto;
   border: black solid 1px;
 
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+
   .SiteHead {
     position: relative;
     display: flex;

@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
 import RegionCodeTranslate from './RegionCodeTranslate';
-import RenderMaps from "./Map";
+//import RenderMaps from "./Map";
 import { updateUserInfo } from '../modules/LoginState';
 import "../style/BookList.scss";
-import { selectRegion } from '../modules/SelectedRegionCode';
-import { load } from 'cheerio';
+//import { selectRegion } from '../modules/SelectedRegionCode';
+//import { load } from 'cheerio';
 
-const default_Thumbnail = "https://bookthumb-phinf.pstatic.net/cover/069/862/06986295.jpg?type=m1&udate=20180918"
+const default_Thumbnail = `${process.env.REACT_APP_DEFAULT_THUMBNAIL}`;
 
 // const END_POINT = "/v1/search/book.json";
 // const Client_ID = "6kzLim7jrHaqIQQcyTyH";
 // const Client_PW = "TKnpNps3Gg";
 
-const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 function leftPad(value) { if (value >= 10) { return value; } return `0${value}`; }
 
 const BookList = (props) => {
     
     const selectedRegion = useSelector(state => state.selectedRegion);
-    const loginState = useSelector(state=> state.updateLoginState.login);
+    //const loginState = useSelector(state=> state.updateLoginState.login);
     const loginInfo = useSelector(state=> state.updateLoginState.user);
 
     const { book, i, frommypage } = props;
@@ -33,34 +33,34 @@ const BookList = (props) => {
 
     // const[modal, setModal] = useState(false);
     // const[modalList, setList] = useState(1);
-    const[clickList, setClickList] = useState(1);
+    //const[clickList, setClickList] = useState(1);
     const[showDetail, setShowDetail] = useState(false);
     const[libSelected,setLibSelected] = useState(-1);
-    const[currentRegion, setCurrentRegion] = useState({});
+    //const[currentRegion, setCurrentRegion] = useState({});
     const[bookDetail, setBookDetail] = useState({});
     const[loadingState, setLoadingState] = useState(false);
 
-    let bookDetail3 = {};
+    //let bookDetail3 = {};
 
-    const testbid = book.bookId;
+    //const testbid = book.bookId;
     
 
-    const getBookDetail = async () => {
+    const getBookDetail = useCallback( async () => {
         setLoadingState(true);
         try{
-            console.log("request book", book);
-            console.log("request info",{
-                isbn: book.isbn,
-                title: book.title,
-                region: selectedRegion.region,
-                subregion: selectedRegion.subregion,
-                username: loginInfo.username,
-                date: today,
-                author: book.author,
-                publisher: book.publisher,
-                frommypage: frommypage
-            });
-            console.log("post!");
+            //console.log("request book", book);
+            // console.log("request info",{
+            //     isbn: book.isbn,
+            //     title: book.title,
+            //     region: selectedRegion.region,
+            //     subregion: selectedRegion.subregion,
+            //     username: loginInfo.username,
+            //     date: today,
+            //     author: book.author,
+            //     publisher: book.publisher,
+            //     frommypage: frommypage
+            // });
+            // console.log("post!");
             
             const res = await axios.post(`${END_POINT}/result`,
                 JSON.stringify({
@@ -79,14 +79,14 @@ const BookList = (props) => {
                     },
             });
             
-            console.log("post complete");
-            console.log("book detail", res.data);
+            // console.log("post complete");
+            // console.log("book detail", res.data);
             
             if(res.data.message === "success"){
                 setBookDetail(res.data);
-                bookDetail3 = res.data;
+                //bookDetail3 = res.data;
                 if (res.data.info.bookId > 0){
-                    console.log("search list added");
+                    //console.log("search list added");
                     let temp = loginInfo.history;
                 
                     temp.push({
@@ -116,7 +116,7 @@ const BookList = (props) => {
         }
 
         setLoadingState(false);
-    };
+    },[book, dispatch, frommypage, loginInfo, selectedRegion.region, selectedRegion.subregion, today]);
 
     const deleteSearchList = async () => {
         try{
@@ -163,11 +163,11 @@ const BookList = (props) => {
         }
         else{
             getBookDetail();
-            setClickList(props.e);
+            //setClickList(props.e);
             setShowDetail(true);
         }
         
-    }, [selectedRegion]);
+    }, [getBookDetail]);
 
     //console.log('props.bookslist', book);
     // useEffect(() => {
@@ -216,16 +216,16 @@ const BookList = (props) => {
         }
     },[libSelected, setLibSelected])
 
-    const renderLibInfo = useCallback((lib) => {
-        return (
-            <>
-                <span>주소 : {lib.address}</span><br/>
-                <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
-                <br/>
-                <br/>
-            </>
-        )
-    },[libSelected])
+    // const renderLibInfo = useCallback((lib) => {
+    //     return (
+    //         <>
+    //             <span>주소 : {lib.address}</span><br/>
+    //             <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
+    //             <br/>
+    //             <br/>
+    //         </>
+    //     )
+    // },[])
 
     const LibraryDetail = useCallback((props) => {
 
@@ -246,7 +246,7 @@ const BookList = (props) => {
                 </div>
             </>
         )
-    },[libDtlOnClick, renderLibInfo, libSelected])
+    },[libDtlOnClick])
 
     
 
@@ -358,11 +358,5 @@ const BookList = (props) => {
     // ); 
 };
 
-{/* {modal && (modalList === (i+1)) ? 
-                            <Modal setModal={setModal} 
-                                title={book.title}
-                                description={book.description}
-                                clickoff={true}
-                            /> : null} */}
 
 export default BookList;

@@ -1,14 +1,14 @@
 import axios from 'axios';
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 //import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
-import { useDispatch, useSelector } from 'react-redux';
-import updateLoginState, { updateLogin } from '../modules/LoginState';
+import { useDispatch } from 'react-redux';
+import { updateLogin } from '../modules/LoginState';
 import { selectRegion } from '../modules/SelectedRegionCode';
 import Modal from "./Modal.js";
 
-const clientId = "323793340670-isvcim8icgebo1juvq01iimrqohprd97.apps.googleusercontent.com"
-const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080";
+const clientId = `${process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID}`;
+const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 // 113948232183335871665
 
 function Login(props) {
@@ -27,12 +27,13 @@ function Login(props) {
                     "Content-Type": `application/json`,
                 },
             });
-            console.log("loginstate",res.data);
+            //console.log("loginstate",res.data);
 
             let userInfo = {};
 
             if (res.data.message === "registered") {
-                userInfo = {name: googleRes.profileObj.name, 
+                userInfo = {
+                    name: googleRes.profileObj.name, 
                     gender: res.data.info.gender,
                     age: res.data.info.age,
                     region: (res.data.info.region === "" ? "11" : res.data.info.region),
@@ -43,7 +44,7 @@ function Login(props) {
                     status: "registered"
                 };
 
-                console.log("Login Info",userInfo);
+                //console.log("Login Info",userInfo);
                 
                 //props.setLoginInfo(userInfo);
         
@@ -76,7 +77,7 @@ function Login(props) {
                     history: [],
                     status: "new"
                 };
-                console.log("Login Info",userInfo);
+                //console.log("Login Info",userInfo);
 
                 alert("신규회원입니다. 회원정보를 입력해주세요.");
 
@@ -109,7 +110,7 @@ function Login(props) {
     
     //로그인 실패시 실행
     const onFailure = (res) => {
-        console.log("login fail",res)
+        //console.log("login fail",res)
 
         setModalInfo({
             title: "Login Fail",

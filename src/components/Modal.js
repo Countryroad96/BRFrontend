@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import ModalPortal from '../ModalPortal';
-import RenderMaps from "./Map";
+//import RenderMaps from "./Map";
 import "../style/Map.scss";
 import "../style/Modal.scss";
 
@@ -14,7 +14,7 @@ const Modal = (props) => {
         // console.log('modalElement.current:', modalEl.current);
         // console.log('!modalEl', !modalEl.current.contains(e.target))
         if (modalEl.current && !modalEl.current.contains(e.target)){
-            console.log("modal close click");
+            //console.log("modal close click");
         }
     };
     useEffect(() => {
@@ -37,7 +37,7 @@ const Modal = (props) => {
             props.callback();
         }
         props.setModal(false);
-    }, [props.callback, props.setModal]);
+    }, [props]);
 
     return (
         <ModalPortal>

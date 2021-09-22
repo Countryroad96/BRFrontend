@@ -7,7 +7,7 @@ import BookList from "./BookList";
 import Mypage from "./Mypage";
 import RegionCodeTranslate from './RegionCodeTranslate';
 import Login from './Login';
-import Logout from './Logout';
+//import Logout from './Logout';
 import "../style/Main.scss";
 
 import RegionSelector from './RegionSelector';
@@ -17,7 +17,7 @@ import { selectRegion } from '../modules/SelectedRegionCode';
 // const Client_ID = "6kzLim7jrHaqIQQcyTyH";
 // const Client_PW = "TKnpNps3Gg";
 
-const END_POINT = "http://ec2-3-19-120-63.us-east-2.compute.amazonaws.com:8080"
+const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 function Main() {
 
@@ -26,7 +26,7 @@ function Main() {
     const [books, setBook] = useState([]);
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
-    const [display, setDisplay] = useState(10);
+    const [display] = useState(10);
     const [searchState, setSearchState] = useState(false);
     // const [loginInfo, setLoginInfo] = useState({});
     // const [loginState, setLoginState] = useState(false);
@@ -55,27 +55,10 @@ function Main() {
             const res = await axios.get(`${END_POINT}/search`, {
                 params: {
                     query: searchText,
-                    // query: searchText,
-                    // display: display*10
                 },
-                // headers: {
-                //     "X-Naver-Client-Id": Client_ID,
-                //     "X-Naver-Client-Secret": Client_PW
-                // }
+
             });
-            console.log(res.data);
-            // const booklist = res.data.items.map((item, index) => ({
-            //         id: index,
-            //         title: item.title.replace(/(<([^>]+)>)/ig,""),
-            //         image: item.image,
-            //         author: item.author.replace(/(<([^>]+)>)/ig,""),
-            //         isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
-            //         year: item.pubdate.replace(/(<([^>]+)>)/ig,""),
-            //         description: item.description.replace(/(<([^>]+)>)/ig,""),
-            //         publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
-            //         link: item.link
-            //     })
-            // );
+            //console.log(res.data);
 
             const booklist = res.data.info.result.map((item, index) => ({
                 id: index,
@@ -111,7 +94,6 @@ function Main() {
                 }
             };
 
-            //let final = testlist.filter((i) => i.filter(item => item !== "undefined") !== "undefined");
             //console.log("final list", final);
             //console.log("test list", testlist);
 
@@ -134,7 +116,7 @@ function Main() {
     
     const onSubmit = (e) => {
         e.preventDefault();
-        console.log(searchText);
+        //console.log(searchText);
         setOpenMypage(false);
         setBook([]);
         setSearchState(false);
@@ -269,13 +251,11 @@ function Main() {
                 <div className="SiteBody">
                     {openMypage ? renderMypage() : null}
                     {(searchState) ? renderSearchlist() : null}
-                    {showRankBest ? (loginState ? <LibraryRank /> : <Bestseller />) : null}
+                    {showRankBest ? (<><Bestseller /><LibraryRank /></>) : null}
                     {(searchState) ? renderButton() : null}
                 </div>
             </div>
     );
 }
-
-//<BookList books={books} page={page-1} <RenderMaps />/>
 
 export default Main;
