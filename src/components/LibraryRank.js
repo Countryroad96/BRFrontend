@@ -113,7 +113,7 @@ function LibraryRank() {
         catch (error) {
         console.log(error);
         }
-    },[display, genreCode, rankGenre, loginInfo, loginState, searchTerm]);
+    },[display, genreCode, loginInfo.age, loginState, rankGenre, searchTerm.enddate, searchTerm.startdate]);
 
     const onClickGenre = (props) => {
         //console.log('props.genre',props.genre);
@@ -218,7 +218,7 @@ function LibraryRank() {
     }
 
     //useEffect(() => {}, [])
-    useEffect(() => {getLibraryRank({genre: searchGenre});},[getLibraryRank,searchGenre, searchTerm]);
+    useEffect(() => {getLibraryRank({genre: searchGenre});},[getLibraryRank, searchGenre]);
 
     return (
         <div className="BestsellerList">

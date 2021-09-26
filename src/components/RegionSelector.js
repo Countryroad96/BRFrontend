@@ -666,11 +666,12 @@ function RegionSelector(props) {
 
         // console.log(selectRegion);
         // console.log(regionCode[selectRegion]);
-        // console.log(selectCity);
-        // console.log(dtl_regionCode[selectRegion][selectCity]);
-        // console.log(dtl_regionCode[selectRegion][selectCity][selectTown]);
+        // console.log(selectCity);'
+        // console.log(REGION_VALUE,CITY_VALUE,TOWN_VALUE);
+        // console.log(dtl_regionCode[REGION_VALUE][CITY_VALUE]);
+        // console.log("town",dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
 
-        if (selectedCity !== "군/구" && selectedCity !== "시/군/구" && selectedCity.length > 0){
+        if (selectedCity !== "군/구" && selectedCity !== "시/군" && selectedCity.length > 0){
             if (MetropolitanCity.includes(REGION_VALUE)){
                 //console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
                 let newloginInfo = {
@@ -698,11 +699,11 @@ function RegionSelector(props) {
                 let newloginInfo = {
                     ...loginInfo,
                     region: regionCode[REGION_VALUE],
-                    subregion: dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE],
+                    subregion: (typeof(dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]) === "undefined" ? dtl_regionCode[REGION_VALUE][CITY_VALUE]["전체"] : dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]),
                 };
                 let temp = {
                     region: regionCode[REGION_VALUE],
-                    subregion: dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE],
+                    subregion: (typeof(dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]) === "undefined" ? dtl_regionCode[REGION_VALUE][CITY_VALUE]["전체"] : dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]),
                 };
 
                 if(props.changeLoginstate) {
@@ -782,6 +783,11 @@ function RegionSelector(props) {
         setSelectCity("");
     }
 
+    // const cityOnChange = (e) => {
+    //     setSelectCity(e.target.value);
+    //     TOWN_VALUE = "전체";
+    // }
+
     
 
 
@@ -803,7 +809,7 @@ function RegionSelector(props) {
                 </select>
                 <select {...register("cityArr")} onChange={(e) => setSelectCity(e.target.value)}>
                     {MetropolitanCity.includes(selectedRegion) ?
-                    <option key="none">군/구</option> : <option key="none">시/군/구</option> }   
+                    <option key="none" selected disabled>군/구</option> : <option key="none" selected disabled>시/군</option> }   
                     {Object.keys(dtl_regionCode[selectedRegion]).map(city => regionOption(city))}
                 </select>
                 {MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?

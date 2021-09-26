@@ -6,11 +6,12 @@ const Naver_Client_ID = `${process.env.REACT_APP_NAVER_MAP_CLIENT_ID}`;
 function NaverMapAPI(props) {
     const navermaps = window.naver.maps;
 
-    //console.log(props.location.latitude, props.location.longitude);
-
+    // console.log(props.location.latitude, props.location.longitude);
+    // console.log(Naver_Client_ID);
+    //console.log(props);
     return (
       <NaverMap
-        mapDivId={"maps-getting-started-uncontrolled"}
+        id={`NaverMap${Math.floor(Math.random() * 1000)}${props.i}`}
         style={{
           width: "500px", // 네이버지도 가로 길이
           height: "300px" // 네이버지도 세로 길이
@@ -29,13 +30,13 @@ function NaverMapAPI(props) {
 
   function RenderMaps(props) {
       return (
-        <div className="NaverMap">
+        <div className={`NaverMap`}>
           <RenderAfterNavermapsLoaded
           ncpClientId={Naver_Client_ID} // 자신의 네이버 계정에서 발급받은 Client ID
           error={<p>Maps Load Error</p>}
           loading={<p>Maps Loading...</p>}
           >
-          <NaverMapAPI location={{longitude: props.location.longitude, latitude: props.location.latitude}}/>
+          <NaverMapAPI location={{longitude: props.location.longitude, latitude: props.location.latitude}} i={props.i}/>
           </RenderAfterNavermapsLoaded>
           <div>
           

@@ -2,18 +2,11 @@ import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
 import RegionCodeTranslate from './RegionCodeTranslate';
-//import RenderMaps from "./Map";
+import RenderMaps from "./Map";
 import { updateUserInfo } from '../modules/LoginState';
 import "../style/BookList.scss";
-//import { selectRegion } from '../modules/SelectedRegionCode';
-//import { load } from 'cheerio';
 
 const default_Thumbnail = `${process.env.REACT_APP_DEFAULT_THUMBNAIL}`;
-
-// const END_POINT = "/v1/search/book.json";
-// const Client_ID = "6kzLim7jrHaqIQQcyTyH";
-// const Client_PW = "TKnpNps3Gg";
-
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 function leftPad(value) { if (value >= 10) { return value; } return `0${value}`; }
@@ -21,7 +14,7 @@ function leftPad(value) { if (value >= 10) { return value; } return `0${value}`;
 const BookList = (props) => {
     
     const selectedRegion = useSelector(state => state.selectedRegion);
-    //const loginState = useSelector(state=> state.updateLoginState.login);
+    const loginState = useSelector(state=> state.updateLoginState.login);
     const loginInfo = useSelector(state=> state.updateLoginState.user);
 
     const { book, i, frommypage } = props;
@@ -40,26 +33,22 @@ const BookList = (props) => {
     const[bookDetail, setBookDetail] = useState({});
     const[loadingState, setLoadingState] = useState(false);
 
-    //let bookDetail3 = {};
 
-    //const testbid = book.bookId;
-    
-
-    const getBookDetail = useCallback( async () => {
+    const getBookDetail =  useCallback(async () => {
         setLoadingState(true);
         try{
-            //console.log("request book", book);
-            // console.log("request info",{
-            //     isbn: book.isbn,
-            //     title: book.title,
-            //     region: selectedRegion.region,
-            //     subregion: selectedRegion.subregion,
-            //     username: loginInfo.username,
-            //     date: today,
-            //     author: book.author,
-            //     publisher: book.publisher,
-            //     frommypage: frommypage
-            // });
+            // console.log("request book", book);
+            console.log("request info",{
+                isbn: book.isbn,
+                title: book.title,
+                region: selectedRegion.region,
+                subregion: selectedRegion.subregion,
+                username: (loginState ? loginInfo.username : null),
+                date: today,
+                author: book.author,
+                publisher: book.publisher,
+                frommypage: (loginState ? frommypage === true ? true : false : true)
+            });
             // console.log("post!");
             
             const res = await axios.post(`${END_POINT}/result`,
@@ -68,11 +57,11 @@ const BookList = (props) => {
                     title: book.title,
                     region: selectedRegion.region,
                     subregion: selectedRegion.subregion,
-                    username: loginInfo.username,
+                    username: (loginState ? loginInfo.username : null),
                     date: today,
                     author: book.author,
                     publisher: book.publisher,
-                    frommypage: (frommypage === true ? true : false)
+                    frommypage: (loginState ? frommypage === true ? true : false : true)
                 }), {
                 headers: {
                     "Content-Type": `application/json`,
@@ -80,11 +69,10 @@ const BookList = (props) => {
             });
             
             // console.log("post complete");
-            // console.log("book detail", res.data);
+            console.log("book detail", res.data);
             
             if(res.data.message === "success"){
                 setBookDetail(res.data);
-                //bookDetail3 = res.data;
                 if (res.data.info.bookId > 0){
                     //console.log("search list added");
                     let temp = loginInfo.history;
@@ -105,18 +93,18 @@ const BookList = (props) => {
                 }
             }
             else {
-                setBookDetail({message: "failure"});
+                setBookDetail({info:{price: "0", stock: ""} ,message: "failure"});
             }
             
         }
         
         catch (error) {
         console.log(error);
-        alert("선택하신 책의 도서관 보유정보를 가져오는데 실패하였습니다.")
+        alert("도서관 보유정보를 가져오는데 실패하였습니다.")
         }
 
         setLoadingState(false);
-    },[book, dispatch, frommypage, loginInfo, selectedRegion.region, selectedRegion.subregion, today]);
+    },[book, dispatch, frommypage, loginInfo, loginState, selectedRegion.region, selectedRegion.subregion, today]);
 
     const deleteSearchList = async () => {
         try{
@@ -167,7 +155,7 @@ const BookList = (props) => {
             setShowDetail(true);
         }
         
-    }, [getBookDetail]);
+    },[getBookDetail]);
 
     //console.log('props.bookslist', book);
     // useEffect(() => {
@@ -183,7 +171,7 @@ const BookList = (props) => {
         if (bookDetail.message === 'success') {
             if (bookDetail.info.libraries.length === 0) {
                 return(
-                    <p>현재 해당 도서를 구비중인 도서관이 없습니다.</p>
+                    <p>현재 해당 도서를 구비중인 도서관이 없습니다. (시 전체 정보가 현재 불안정한 상태입니다.)</p>
                 )
             }
             else {
@@ -191,7 +179,7 @@ const BookList = (props) => {
                     <>
                         <p>해당 도서를 구비중인 도서관 목록</p>
                         <div className="LibraryList">
-                            {bookDetail.info.libraries.map((lib, i) =><LibraryDetail key={lib.name} lib={lib} i={i} />)}
+                            {bookDetail.info.libraries.map((lib, i) =><LibraryDetail key={lib.name} lib={lib} i={i} j={book.isbn} />)}
                         </div>
                     </>
                 )
@@ -205,7 +193,7 @@ const BookList = (props) => {
         }
 
         
-    },[bookDetail])
+    },[bookDetail, book]);
 
     const libDtlOnClick = useCallback((i) => {
         if (libSelected !== i) {
@@ -236,8 +224,16 @@ const BookList = (props) => {
                 <div className="LibraryInfo">
                     <details>
                         <summary><span onClick={() => libDtlOnClick(i)}>{lib.name}</span></summary><br/>
-                        <span>주소 : {lib.address}</span><br/>
-                        <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
+                        <div className="Library">
+                            <div>
+                                <span className={"LibAddress"}>주소 : {lib.address}</span><br/><br/>
+                                <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
+                            </div>
+                            <RenderMaps location={{
+                                    longitude: lib.longitude,
+                                    latitude: lib.latitude
+                                }} i={i} />
+                        </div>
                     </details>
                     
 
@@ -271,10 +267,7 @@ const BookList = (props) => {
                                     <p>선택된 지역 : {temp.fullName}</p>
                                     <RenderLiblist bookDetail={bookDetail}/>
                                 </div>
-                                {/* <RenderMaps location={{
-                                    longitude: 126.9777500,
-                                    latitude: 37.566300
-                                }} /> */}
+                                {}
                             </div>            
                         </div>               
                     </td>

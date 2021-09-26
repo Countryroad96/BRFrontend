@@ -646,10 +646,10 @@ function RegionCodeTranslate(props) {
         else {
             let regionNum = props.code.substr(0,2);
             let cityNum = props.code.substr(2,3);
-            let cityNum2 = parseInt(props.code.substr(2,2),10) - 1;
+            let cityNum2 = (parseInt(props.code.substr(2,2),10) - 1 ? parseInt(props.code.substr(2,2),10) - 1 : 0);
             let townNum = props.code.substr(2,3);
 
-            //console.log('cityNum2', cityNum2);
+            console.log('cityNum2', cityNum2);
             
 
             let cityName = "";

@@ -33,6 +33,7 @@ function Main() {
     const [openMypage, setOpenMypage] = useState(false);
     const [showRankBest, setShowRankBest] = useState(true);
     const [openRegionSelector, setOpenRegionSelector] = useState(false);
+    const [loadingState, setLoadingState] = useState(false);
 
     const loginState = useSelector(state => state.updateLoginState.login);
     const loginInfo = useSelector(state => state.updateLoginState.user);
@@ -51,6 +52,7 @@ function Main() {
 
 
     const getSearchBook = async () => {
+        setLoadingState(true);
         try{
             const res = await axios.get(`${END_POINT}/search`, {
                 params: {
@@ -102,7 +104,7 @@ function Main() {
             setTotalPage(totalpage);
             setBook(testlist);
             setSearchState(true);
-
+            setLoadingState(false);
             //console.log("res.data",res.data);
             //console.log("testlist",testlist);
             //console.log('booklist', booklist);
@@ -111,6 +113,7 @@ function Main() {
         } 
         catch (error) {
         console.log(error);
+        setLoadingState(false);
         }
     };
     
@@ -249,6 +252,7 @@ function Main() {
                         />}
                 </div>
                 <div className="SiteBody">
+                    {loadingState ? 'Loading...' : null}
                     {openMypage ? renderMypage() : null}
                     {(searchState) ? renderSearchlist() : null}
                     {showRankBest ? (<><Bestseller /><LibraryRank /></>) : null}
