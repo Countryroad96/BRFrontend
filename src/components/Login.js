@@ -94,11 +94,13 @@ function Login(props) {
                 
             }
             else {
+                alert("로그인 실패");
                 console.log('error, res:', res);
             };
             
         }
         catch (error) {
+            alert("로그인 실패");
             console.log(error);
         }
     };
