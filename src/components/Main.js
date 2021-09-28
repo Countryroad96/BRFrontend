@@ -13,9 +13,6 @@ import "../style/Main.scss";
 import RegionSelector from './RegionSelector';
 import { selectRegion } from '../modules/SelectedRegionCode';
 
-// const END_POINT = "/v1/search/book.json";
-// const Client_ID = "6kzLim7jrHaqIQQcyTyH";
-// const Client_PW = "TKnpNps3Gg";
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 

@@ -9,7 +9,6 @@ import Modal from "./Modal.js";
 
 const clientId = `${process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID}`;
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
-// 113948232183335871665
 
 function Login(props) {
 

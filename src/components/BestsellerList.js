@@ -4,11 +4,8 @@ import BookList from "./BookList";
 import axios from 'axios';
 import "../style/BestsellerList.scss"
 
-//const END_POINT = "/v1/search/book.json";
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
-// const Client_ID = "6kzLim7jrHaqIQQcyTyH";
-// const Client_PW = "TKnpNps3Gg";
 
 function Bestseller() {
 

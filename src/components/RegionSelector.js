@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserInfo } from '../modules/LoginState';
 import { selectRegion } from '../modules/SelectedRegionCode';
@@ -19,7 +19,7 @@ function RegionSelector(props) {
     //const [selectRegionCode, setSelectRegionCode] = useState("");
     const [selectedCity, setSelectCity] = useState("");
     //const [selectCityCode, setSelectCityCode] = useState("");
-    //const [selectTown, setSelectTown] = useState("");
+    const [selectedTown, setSelectTown] = useState("전체");
     //const [selectTownCode, setSelectTownCode] = useState("");
 
     const regionCode = {
@@ -39,10 +39,10 @@ function RegionSelector(props) {
         전라남도: '36',
         경상북도: '37',
         경상남도: '38',
-        제주도: '39',
-    }
+        제주특별자치도: '39',
+    };
 
-    const dtl_regionCode = {
+    const dtl_regionCode = useMemo(() => ({
         서울특별시: {
             종로구: '010',
             중구:   '020',
@@ -646,9 +646,9 @@ function RegionSelector(props) {
                 전체: '020',
             },
         },
-    }
+    }),[]);
 
-    const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '울산광역시',
+    const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시',
                         '세종특별자치시'];
 
 
@@ -696,27 +696,33 @@ function RegionSelector(props) {
             else{
                 //console.log(regionCode[REGION_VALUE]
                 //            + dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
-                let newloginInfo = {
-                    ...loginInfo,
-                    region: regionCode[REGION_VALUE],
-                    subregion: (typeof(dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]) === "undefined" ? dtl_regionCode[REGION_VALUE][CITY_VALUE]["전체"] : dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]),
-                };
-                let temp = {
-                    region: regionCode[REGION_VALUE],
-                    subregion: (typeof(dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]) === "undefined" ? dtl_regionCode[REGION_VALUE][CITY_VALUE]["전체"] : dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]),
-                };
-
-                if(props.changeLoginstate) {
-                    dispatch(updateUserInfo(newloginInfo))
-                };
-                if(props.setRegion) {
-                    //console.log('temp', temp);
-                    dispatch(selectRegion(temp))
-                };
+                if (selectedTown !== "지역구" && selectedTown.length > 0){
+                    let newloginInfo = {
+                        ...loginInfo,
+                        region: regionCode[REGION_VALUE],
+                        subregion: (typeof(dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]) === "undefined" ? dtl_regionCode[REGION_VALUE][CITY_VALUE]["전체"] : dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]),
+                    };
+                    let temp = {
+                        region: regionCode[REGION_VALUE],
+                        subregion: (typeof(dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]) === "undefined" ? dtl_regionCode[REGION_VALUE][CITY_VALUE]["전체"] : dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]),
+                    };
+    
+                    if(props.changeLoginstate) {
+                        dispatch(updateUserInfo(newloginInfo))
+                    };
+                    if(props.setRegion) {
+                        //console.log('temp', temp);
+                        dispatch(selectRegion(temp))
+                    };
+                }
+                else{
+                    alert("지역구를 선택해주세요.");
+                }
+                
             }       
         }
         else{
-            alert("시/군/구 를 선택해주세요.")
+            alert("시/군/구 를 선택해주세요.");
         }
 
         
@@ -764,29 +770,32 @@ function RegionSelector(props) {
 
     const regionOption = (k, v) => {
         return (
-            <option key={k} value={v}>{k}</option>
+            <option key={k} value={k}>{k}</option>
         )    
     }
 
-    const RenderSelectTown = () => {
-        //console.log(Object.keys(dtl_regionCode[selectRegion])[0]);
-        //setSelectCity(Object.keys(dtl_regionCode[selectRegion]));
-        return (
-            <select {...register("townArr")} >
-                    {Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
-            </select>
-        )
-    }
+    // const RenderSelectTown = useCallback(() => {
+    //     console.log('selectedTown', selectedTown);
+    //     //onsole.log(Object.keys(dtl_regionCode[selectRegion])[0]);
+    //     //setSelectCity(Object.keys(dtl_regionCode[selectRegion]));
+    //     return (
+    //         <select {...register("townArr")} value={selectedTown} onChange={(e) => setSelectTown(e.target.value)}>
+    //             <option key="none" value="">지역구</option>
+    //             {Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
+    //         </select>
+    //     )
+    // },[selectedTown, selectedRegion, selectedCity, dtl_regionCode, register])
 
     const regionOnChange = (e) => {
         setSelectRegion(e.target.value);
         setSelectCity("");
+        setSelectTown("전체");
     }
 
-    // const cityOnChange = (e) => {
-    //     setSelectCity(e.target.value);
-    //     TOWN_VALUE = "전체";
-    // }
+    const cityOnChange = (e) => {
+        setSelectCity(e.target.value);
+        setSelectTown("전체");
+    }
 
     
 
@@ -807,14 +816,16 @@ function RegionSelector(props) {
                 <select {...register("regionArr")} onChange={(e) => regionOnChange(e)}>
                     {Object.keys(regionCode).map(region => regionOption(region))}
                 </select>
-                <select {...register("cityArr")} onChange={(e) => setSelectCity(e.target.value)}>
+                <select {...register("cityArr")} value={selectedCity} onChange={(e) => cityOnChange(e)}>
                     {MetropolitanCity.includes(selectedRegion) ?
-                    <option key="none" selected disabled>군/구</option> : <option key="none" selected disabled>시/군</option> }   
+                    <option key="none" value="" disabled>군/구</option> : <option key="none" value="" disabled>시/군</option>}   
                     {Object.keys(dtl_regionCode[selectedRegion]).map(city => regionOption(city))}
                 </select>
-                {MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?
-                null : RenderSelectTown() }
-
+                <select {...register("townArr")} style={MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?
+                                                        {display: 'none'}:{}} value={selectedTown} onChange={(e) => setSelectTown(e.target.value)}>
+                    {MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?
+                    null : Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
+                </select>
                 <input type="submit" value="지역선택" />
             </form>
         </div>

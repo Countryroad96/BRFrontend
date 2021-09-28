@@ -192,7 +192,7 @@ function Mypage(props) {
             전라남도: '36',
             경상북도: '37',
             경상남도: '38',
-            제주도: '39',
+            제주특별자치도: '39',
         }
     
         const dtl_regionCode = {
@@ -801,7 +801,7 @@ function Mypage(props) {
             },
         }
     
-        const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '울산광역시',
+        const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시',
                             '세종특별자치시'];
 
         // const renderRegionOption = () => {

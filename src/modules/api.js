@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const END_POINT = '/v1/search/book.json';
+const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 // 비동기 작업 함수
 export const getBestseller = (code) => {

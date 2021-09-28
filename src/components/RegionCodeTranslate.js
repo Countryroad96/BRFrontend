@@ -19,7 +19,7 @@ function RegionCodeTranslate(props) {
         전라남도: '36',
         경상북도: '37',
         경상남도: '38',
-        제주도: '39',
+        제주특별자치도: '39',
     }
 
     const dtl_regionCode = {
@@ -631,7 +631,7 @@ function RegionCodeTranslate(props) {
     //const [result, setResult] = useState({});
 
     //useEffect(() => {
-        const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '울산광역시',
+        const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시',
                         '세종특별자치시'];
 
 
@@ -646,10 +646,9 @@ function RegionCodeTranslate(props) {
         else {
             let regionNum = props.code.substr(0,2);
             let cityNum = props.code.substr(2,3);
-            let cityNum2 = (parseInt(props.code.substr(2,2),10) - 1 ? parseInt(props.code.substr(2,2),10) - 1 : 0);
             let townNum = props.code.substr(2,3);
 
-            //console.log('cityNum2', cityNum2);
+            //console.log('cityNum', cityNum);
             
 
             let cityName = "";
@@ -668,8 +667,16 @@ function RegionCodeTranslate(props) {
                     });
             }
             else {
-                cityName = Object.keys(dtl_regionCode[regionName])[cityNum2];
-                townName = Object.keys(dtl_regionCode[regionName][cityName]).find(key => dtl_regionCode[regionName][cityName][key] === townNum);
+                for (let i in dtl_regionCode[regionName]) {
+                    for (let j in dtl_regionCode[regionName][i]) {
+                        if (townNum === dtl_regionCode[regionName][i][j]) {
+                        cityName = i;
+                        townName = Object.keys(dtl_regionCode[regionName][i]).find(key => dtl_regionCode[regionName][i][key] === townNum);
+                        console.log("1", cityName);
+                        console.log("2", townName);
+                        }
+                    }
+                }
                 return ({
                     fullName: regionName + " " + cityName + " " + townName,
                     regionName: regionName,
