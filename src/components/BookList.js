@@ -38,17 +38,17 @@ const BookList = (props) => {
         setLoadingState(true);
         try{
             // console.log("request book", book);
-            console.log("request info",{
-                isbn: book.isbn,
-                title: book.title,
-                region: selectedRegion.region,
-                subregion: selectedRegion.subregion,
-                username: (loginState ? loginInfo.username : null),
-                date: today,
-                author: book.author,
-                publisher: book.publisher,
-                frommypage: (loginState ? frommypage === true ? true : false : true)
-            });
+            // console.log("request info",{
+            //     isbn: book.isbn,
+            //     title: book.title,
+            //     region: selectedRegion.region,
+            //     subregion: selectedRegion.subregion,
+            //     username: (loginState ? loginInfo.username : null),
+            //     date: today,
+            //     author: book.author,
+            //     publisher: book.publisher,
+            //     frommypage: (loginState ? frommypage === true ? true : false : true)
+            // });
             // console.log("post!");
             
             const res = await axios.post(`${END_POINT}/result`,
@@ -69,7 +69,7 @@ const BookList = (props) => {
             });
             
             // console.log("post complete");
-            console.log("book detail", res.data);
+            //console.log("book detail", res.data);
             
             if(res.data.message === "success"){
                 setBookDetail(res.data);
@@ -157,12 +157,6 @@ const BookList = (props) => {
         
     },[getBookDetail]);
 
-    //console.log('props.bookslist', book);
-    // useEffect(() => {
-    //     console.log("redux selRegion", selectedRegion.region, selectedRegion.subregion);
-        
-        
-    // }, []);
 
     const RenderLiblist = useCallback(() => {
 
