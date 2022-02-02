@@ -2,25 +2,18 @@ import React, { useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserInfo } from '../modules/LoginState';
 import { selectRegion } from '../modules/SelectedRegionCode';
-//import RegionCodeTranslate from './RegionCodeTranslate';
 import { useForm } from 'react-hook-form';
+import Button from 'react-bootstrap/Button';
 
 
 
 function RegionSelector(props) {
 
     const loginInfo = useSelector(state => state.updateLoginState.user);
-    //const loginState = useSelector(state => state.updateLoginState.login);
     const dispatch = useDispatch();
-
-    
-    //const [loginInfoRegion, setloginInfoRegion] = useState({});
     const [selectedRegion, setSelectRegion] = useState("서울특별시");
-    //const [selectRegionCode, setSelectRegionCode] = useState("");
     const [selectedCity, setSelectCity] = useState("");
-    //const [selectCityCode, setSelectCityCode] = useState("");
     const [selectedTown, setSelectTown] = useState("전체");
-    //const [selectTownCode, setSelectTownCode] = useState("");
 
     const regionCode = {
         서울특별시: '11',
@@ -659,21 +652,12 @@ function RegionSelector(props) {
     const { register, handleSubmit } = useForm();
 
     const onSubmit = (data) => {
-        //data.preventDefault();
         REGION_VALUE = data.regionArr;
         CITY_VALUE = data.cityArr;
         TOWN_VALUE = data.townArr;
 
-        // console.log(selectRegion);
-        // console.log(regionCode[selectRegion]);
-        // console.log(selectCity);'
-        // console.log(REGION_VALUE,CITY_VALUE,TOWN_VALUE);
-        // console.log(dtl_regionCode[REGION_VALUE][CITY_VALUE]);
-        // console.log("town",dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
-
         if (selectedCity !== "군/구" && selectedCity !== "시/군" && selectedCity.length > 0){
             if (MetropolitanCity.includes(REGION_VALUE)){
-                //console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
                 let newloginInfo = {
                     ...loginInfo,
                     region: regionCode[REGION_VALUE],
@@ -688,14 +672,11 @@ function RegionSelector(props) {
                     dispatch(updateUserInfo(newloginInfo))
                 };
                 if(props.setRegion) {
-                    //console.log('temp', temp);
                     dispatch(selectRegion(temp))
                 };
 
             }
             else{
-                //console.log(regionCode[REGION_VALUE]
-                //            + dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
                 if (selectedTown !== "지역구" && selectedTown.length > 0){
                     let newloginInfo = {
                         ...loginInfo,
@@ -711,7 +692,6 @@ function RegionSelector(props) {
                         dispatch(updateUserInfo(newloginInfo))
                     };
                     if(props.setRegion) {
-                        //console.log('temp', temp);
                         dispatch(selectRegion(temp))
                     };
                 }
@@ -724,67 +704,13 @@ function RegionSelector(props) {
         else{
             alert("시/군/구 를 선택해주세요.");
         }
-
-        
-        
-        //console.log(test1);
-        //setSelectRegion(REGION_VALUE);
-        //setSelectRegionCode(regionCode[REGION_VALUE]);
     }
-
-
-
-    // for (let k in dtl_regionCode.서울특별시) {
-    //     const v = dtl_regionCode.서울특별시[k];
-    //     console.log(k, v);
-    //     //cityof11.push(new String(k));
-    // }
-
-    //const regions = Object.keys(regionCode);
-    // const  getKeyByValue = (object, value) => {
-    //     return Object.keys(object).find(key => object[key] === value);
-    // }
-
-    // useEffect(() => {
-    //     if (loginState) {
-    //         console.log('true')
-    //         setloginInfoRegion(RegionCodeTranslate({code: loginInfo.region + loginInfo.subregion}));
-    //     }
-    //     else {
-    //         console.log('false')
-    //         setloginInfoRegion({
-    //             region: selectedRegion,
-    //         });
-    //     }
-    // },[loginState]);
-
-    
-    
-
-    // const renderRegionOption = () => {
-    //     for (let k in regionCode) {
-    //         const v = regionCode[k];
-    //         regionOption(k, v);
-    //     }
-    // }
 
     const regionOption = (k, v) => {
         return (
             <option key={k} value={k}>{k}</option>
         )    
     }
-
-    // const RenderSelectTown = useCallback(() => {
-    //     console.log('selectedTown', selectedTown);
-    //     //onsole.log(Object.keys(dtl_regionCode[selectRegion])[0]);
-    //     //setSelectCity(Object.keys(dtl_regionCode[selectRegion]));
-    //     return (
-    //         <select {...register("townArr")} value={selectedTown} onChange={(e) => setSelectTown(e.target.value)}>
-    //             <option key="none" value="">지역구</option>
-    //             {Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
-    //         </select>
-    //     )
-    // },[selectedTown, selectedRegion, selectedCity, dtl_regionCode, register])
 
     const regionOnChange = (e) => {
         setSelectRegion(e.target.value);
@@ -796,19 +722,6 @@ function RegionSelector(props) {
         setSelectCity(e.target.value);
         setSelectTown("전체");
     }
-
-    
-
-
-    //const renderSelectBox = () => {
-
-    // useEffect(() => {
-    //     if (typeof(loginInfoRegion.regionName) !== "undefined"  && typeof(loginInfoRegion.cityName) !== "undefined") {
-    //         setSelectRegion(loginInfoRegion.regionName);
-    //         setSelectCity(loginInfoRegion.cityName);
-    //     }
-        
-    // },[loginInfoRegion, loginInfo]);
 
     return(
         <div className="selectbox">
@@ -826,7 +739,8 @@ function RegionSelector(props) {
                     {MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?
                     null : Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
                 </select>
-                <input type="submit" value="지역선택" />
+                <Button variant="secondary" size="sm" type="submit">지역선택</Button>
+                <Button variant="secondary" size="sm" onClick={props.onClickRegionReset}>초기화</Button>
             </form>
         </div>
         

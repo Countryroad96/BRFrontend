@@ -4,7 +4,10 @@ import axios from "axios";
 import RegionCodeTranslate from './RegionCodeTranslate';
 import RenderMaps from "./Map";
 import { updateUserInfo } from '../modules/LoginState';
+import PuffLoader from 'react-spinners/PuffLoader';
 import "../style/BookList.scss";
+import Accordion from 'react-bootstrap/Accordion'
+import Button from 'react-bootstrap/Button';
 
 const default_Thumbnail = `${process.env.REACT_APP_DEFAULT_THUMBNAIL}`;
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
@@ -23,34 +26,16 @@ const BookList = (props) => {
     let today = `${deftoday.getFullYear()}-${leftPad(deftoday.getMonth() + 1)}-${leftPad(deftoday.getDate())}`;
 
     const dispatch = useDispatch();
-
-    // const[modal, setModal] = useState(false);
-    // const[modalList, setList] = useState(1);
-    //const[clickList, setClickList] = useState(1);
     const[showDetail, setShowDetail] = useState(false);
-    const[libSelected,setLibSelected] = useState(-1);
-    //const[currentRegion, setCurrentRegion] = useState({});
     const[bookDetail, setBookDetail] = useState({});
     const[loadingState, setLoadingState] = useState(false);
+
+    let isDelete = false;
 
 
     const getBookDetail =  useCallback(async () => {
         setLoadingState(true);
         try{
-            // console.log("request book", book);
-            // console.log("request info",{
-            //     isbn: book.isbn,
-            //     title: book.title,
-            //     region: selectedRegion.region,
-            //     subregion: selectedRegion.subregion,
-            //     username: (loginState ? loginInfo.username : null),
-            //     date: today,
-            //     author: book.author,
-            //     publisher: book.publisher,
-            //     frommypage: (loginState ? frommypage === true ? true : false : true)
-            // });
-            // console.log("post!");
-            
             const res = await axios.post(`${END_POINT}/result`,
                 JSON.stringify({
                     isbn: book.isbn,
@@ -68,13 +53,9 @@ const BookList = (props) => {
                     },
             });
             
-            // console.log("post complete");
-            //console.log("book detail", res.data);
-            
             if(res.data.message === "success"){
                 setBookDetail(res.data);
                 if (res.data.info.bookId > 0){
-                    //console.log("search list added");
                     let temp = loginInfo.history;
                 
                     temp.push({
@@ -107,6 +88,7 @@ const BookList = (props) => {
     },[book, dispatch, frommypage, loginInfo, loginState, selectedRegion.region, selectedRegion.subregion, today]);
 
     const deleteSearchList = async () => {
+        isDelete = true;
         try{
             const res = await axios({
                 method: 'DELETE',
@@ -119,9 +101,7 @@ const BookList = (props) => {
             if (res.data.message === "success") {
                 alert("삭제 성공");
                 let temp = loginInfo.history;
-                //console.log("i", i);
                 temp.splice(i, 1);
-                //console.log("temp",temp);
                 dispatch(updateUserInfo({
                     ...loginInfo,
                     history: temp,
@@ -138,34 +118,26 @@ const BookList = (props) => {
     }
 
     const onClickfunc = useCallback( (props) => {
-        //setList(e);
-        //setModal(true);
-        //console.log("onClick1", props.e, clickList, showDetail, props.showDtl);
         
         if(props.showDtl === true){
-            
-            setLibSelected(-1);
             setShowDetail(false);
-            //console.log("onClick2", props.e, clickList, showDetail, props.showDtl);
-        
         }
         else{
+            if (isDelete) {
+                return;
+            }
             getBookDetail();
-            //setClickList(props.e);
             setShowDetail(true);
         }
         
-    },[getBookDetail]);
+    },[getBookDetail, isDelete]);
 
 
     const RenderLiblist = useCallback(() => {
-
-        //console.log("renderInfo", bookDetail);
-        //console.log("bDtl3", bookDetail3);
         if (bookDetail.message === 'success') {
             if (bookDetail.info.libraries.length === 0) {
                 return(
-                    <p>현재 해당 도서를 구비중인 도서관이 없습니다. (시 전체 정보가 현재 불안정한 상태입니다.)</p>
+                    <p>검색 결과가 없습니다.</p>
                 )
             }
             else {
@@ -173,12 +145,14 @@ const BookList = (props) => {
                     <>
                         <p>해당 도서를 구비중인 도서관 목록</p>
                         <div className="LibraryList">
-                            {bookDetail.info.libraries.map((lib, i) =><LibraryDetail key={lib.name} lib={lib} i={i} j={book.isbn} />)}
+                            <Accordion alwaysOpen>
+                                {bookDetail.info.libraries.map((lib, i) =><LibraryDetail key={lib.name} lib={lib} i={i} j={book.isbn} />)}
+                            </Accordion>
+                            
                         </div>
                     </>
                 )
             }
-            
         }
         else {
             return(
@@ -189,26 +163,6 @@ const BookList = (props) => {
         
     },[bookDetail, book]);
 
-    const libDtlOnClick = useCallback((i) => {
-        if (libSelected !== i) {
-            setLibSelected(i);
-        }
-        else if (libSelected === i) {
-            setLibSelected(-1);
-        }
-    },[libSelected, setLibSelected])
-
-    // const renderLibInfo = useCallback((lib) => {
-    //     return (
-    //         <>
-    //             <span>주소 : {lib.address}</span><br/>
-    //             <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
-    //             <br/>
-    //             <br/>
-    //         </>
-    //     )
-    // },[])
-
     const LibraryDetail = useCallback((props) => {
 
         const { lib, i } = props;
@@ -216,47 +170,42 @@ const BookList = (props) => {
         return(
             <>
                 <div className="LibraryInfo">
-                    <details>
-                        <summary><span onClick={() => libDtlOnClick(i)}>{lib.name}</span></summary><br/>
-                        <div className="Library">
-                            <div>
-                                <span className={"LibAddress"}>주소 : {lib.address}</span><br/><br/>
-                                <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
+                    <Accordion.Item eventKey={i}>
+                        <Accordion.Header>{lib.name}</Accordion.Header>
+                        <Accordion.Body>
+                            <div className="Library">
+                                    <div>
+                                        <br/>
+                                        <span className={"LibAddress"}>주&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;소 : {lib.address}</span><br/><br/>
+                                        <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
+                                    </div>
+                                    <RenderMaps location={{
+                                            longitude: lib.longitude,
+                                            latitude: lib.latitude
+                                        }} i={i} />
                             </div>
-                            <RenderMaps location={{
-                                    longitude: lib.longitude,
-                                    latitude: lib.latitude
-                                }} i={i} />
-                        </div>
-                    </details>
-                    
-
-
-                    {/* {libSelected === i ? renderLibInfo(lib) : null} */}
+                        </Accordion.Body>
+                    </Accordion.Item>
                 </div>
             </>
         )
-    },[libDtlOnClick])
-
-    
-
+    },[])
 
     const renderDetail = useCallback((book) => {
 
-        
-        
         let temp = RegionCodeTranslate({code: selectedRegion.region + selectedRegion.subregion});
-        //console.log(RegionCodeTranslate({code: selectedRegion.region + selectedRegion.subregion}))
 
         return (
             <>
-                <tr>
+                <tr style={{backgroundColor: "#ffffff"}}>
                     <td colSpan="2">
                         <div className="BookDetailInfo">
-                            <span>{book.description}</span><br/>
+                            <h4>책 정보</h4>
+                            <span>{(book.description) ? book.description : "책 소개말이 없습니다."}</span><br/><br/>
                             <span>가격 : {bookDetail.info.price}원</span><br/>
-                            <span>재고 : {bookDetail.info.stock === "available" ? "재고 있음" : "재고 없음"}</span>
+                            <span>재고 : {bookDetail.info.stock === "available" ? "재고 있음" : "재고 없음"}</span><br/><br/>
                             <div className="LibraryInfo">
+                                <h4>도서관 소장 정보</h4>
                                 <div className="LibraryDetailInfo">
                                     <p>선택된 지역 : {temp.fullName}</p>
                                     <RenderLiblist bookDetail={bookDetail}/>
@@ -266,12 +215,12 @@ const BookList = (props) => {
                         </div>               
                     </td>
                 </tr>
-                <tr>
+                <tr style={{backgroundColor: "#ffffff"}}>
                     <td colSpan="2">
                         <div style={{textAlign: "center"}}>
-                            <button className="CloseDetailButton" onClick={() => setShowDetail(false)}>
+                            <Button variant="secondary" className="CloseDetailButton" onClick={() => setShowDetail(false)}>
                                 닫기
-                            </button>
+                            </Button>
                         </div>
                     </td>
                 </tr>
@@ -279,19 +228,16 @@ const BookList = (props) => {
         )
     },[selectedRegion, bookDetail])
 
-    //setTemp(props.books[page])
-    //console.log('temp',temp);)
-    //if (typeof(book) !== "undefined" && book !== "undefined") {
-
     const handleImgError = (e) => {
         e.target.src = default_Thumbnail;
     }
 
     const renderLoading = () => {
         return(
-            <tr>
-                <td>
-                    <span>Loading...</span>
+            <tr style={{backgroundColor: "#ffffff"}}>
+                <td style={{textAlign: "center"}}>
+                    <h5>검색중입니다</h5>
+                    <PuffLoader color={"#00ACFD"} loading={true} css={{display: "block", height: "100px", margin: "auto", marginTop: "20px"}} size={80} />
                 </td>
             </tr>
         )
@@ -301,48 +247,44 @@ const BookList = (props) => {
         <div className="BookInfoBox" >
             <table style={{width: "100%"}}>
                 <tbody>
-                    <tr onClick={() => onClickfunc(props={e: i+1, showDtl: showDetail})} style={{display: "flex",alignItems: "center" , minHeight: "125px"}}>
+                    <tr onClick={() => onClickfunc(props={e: i+1, showDtl: showDetail})} style={{display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "125px", marginTop: "10px", backgroundColor: "#ffffff"}}>
                         <td className="BookImgTable">
-                            <img className="BookImg" src={book.image ? book.image : default_Thumbnail} onError={handleImgError} alt={book.title} />
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <img className="BookImg" src={book.image ? book.image : default_Thumbnail} onError={handleImgError} alt={book.title} /> 
+                                        </td>
+                                        <td>
+                                            <span>{typeof(book.rank) !== 'undefined' && book.rank+". "}{book.title}</span>
+                                            <br></br>
+                                            <span>{book.author}</span>
+                                            <span>ㅣ</span>
+                                            <span>{book.publisher}</span>
+                                            <span>ㅣ</span>
+                                            <span>{book.isbn}</span>
+                                            <span>ㅣ</span>
+                                            <span>{frommypage ? book.date : book.year}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </td>                                                                
                         <td>
-                            <span>{typeof(book.rank) !== 'undefined' && book.rank+". "}{book.title}</span>
-                            <br></br>
-                            <span>{book.author}</span>
-                            <span>ㅣ</span>
-                            <span>{book.publisher}</span>
-                            <span>ㅣ</span>
-                            <span>{book.isbn}</span>
-                            <span>ㅣ</span>
-                            <span>{frommypage ? book.date : book.year}</span>
-                            
-                        </td>                                         
+                            {frommypage ?
+                            <Button variant="light" className="DeleteSearchListButton" style={{marginBottom: "85px"}}  onClick={() => deleteSearchList()}>
+                                X
+                            </Button> : null}
+                        </td>
                     </tr>                                    
                     {showDetail ?
                     (loadingState ? renderLoading() : renderDetail(book))
                     : null}
                 </tbody>
             </table>
-            {frommypage ?
-                            <button className="DeleteSearchListButton" onClick={() => deleteSearchList()}>
-                                X
-                            </button> : null}
+            
         </div>
     );
-    //}
-    // else{
-    //     return "No result";
-    // }
-    
-
-    // return (
-    //     props.books.map((book, i) => {
-    //         //if (typeof(book) !== "undefined" && book !== "undefined") {
-    //         //}
-
-            
-    //     })
-    // ); 
 };
 
 

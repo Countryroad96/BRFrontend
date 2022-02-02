@@ -11,16 +11,11 @@ function Logout(props) {
 
     const dispatch = useDispatch();
 
-
     const onSuccess = () => {
-
-        // props.setLoginInfo({});
-        // props.setLoginState(false);
         props.setOpenMypage(false);
         props.setShowRankBest(true);
         dispatch(updateLogout());
         dispatch(selectRegion({region: "11", subregion: "010"}));
-
     };
 
     return (
@@ -28,7 +23,7 @@ function Logout(props) {
             <GoogleLogout
                 clientId={clientId}
                 buttonText="Logout"
-                onLogoutSuccess={onSuccess} //성공시 실행
+                onLogoutSuccess={onSuccess}
             ></GoogleLogout>
         </>
     );

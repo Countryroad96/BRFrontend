@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import BookList from "./BookList";
 import axios from 'axios';
 import "../style/BestsellerList.scss"
+import tab from "../style/image/tabBoard_bar.gif";
+import PuffLoader from 'react-spinners/PuffLoader';
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
@@ -13,18 +15,14 @@ let deftoday = new Date();
     let defTemp = new Date(today1.setMonth(today1.getMonth()-3));
     let endDate = `${deftoday.getFullYear()}-${leftPad(deftoday.getMonth() + 1)}-${leftPad(deftoday.getDate())}`;
     const defaultTerm = { startdate:  `${defTemp.getFullYear()}-${leftPad(defTemp.getMonth() + 1)}-${leftPad(defTemp.getDate())}`,
-                                enddate: `${deftoday.getFullYear()}-${leftPad(deftoday.getMonth() + 1)}-${leftPad(deftoday.getDate())}`};
+                            enddate: `${deftoday.getFullYear()}-${leftPad(deftoday.getMonth() + 1)}-${leftPad(deftoday.getDate())}`};
 
 
 function LibraryRank() {
 
     const [loadingState, setLoadingState] = useState(false);
-    //const [searchText, setSearchText] = useState("");
     const [books, setBook] = useState([]);
-    //const [page, setPage] = useState(1);
-    //const [totalPage, setTotalPage] = useState(0);
     const [display] = useState(10);
-    //const [searchState, setSearchState] = useState(false);
     const [searchGenre, setSearchGenre] = useState("전체");
     const [searchTerm, setSearchTerm] = useState(defaultTerm);
     const [selected, setSelected] = useState("3개월");
@@ -35,37 +33,21 @@ function LibraryRank() {
 
     const rankGenre = useMemo(() => ["전체", "철학", "종교", "사회과학", "자연과학",
                         "기술과학", "예술", "언어", "문학", "역사"],[]);
-    
     const genreCode = useMemo(() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],[]);
-
-    
-    
 
     const getLibraryRank = useCallback( async (props) => {
 
-        //setSearchTerm(defaultTerm);
-
         setBook([]);
         setLoadingState(true);
-        //console.log("code", genreCode[rankGenre.indexOf(props.genre)]);
-        //console.log("dfT", defaultTerm);
-        //console.log("term", searchTerm);
         try{
             const res = await axios.get(`${END_POINT}/library`, {
                 params: {
-                    // query: props.genre,
-                    // display: display*10
                     startdate: searchTerm.startdate,
                     enddate: searchTerm.enddate,
                     age: (loginState ? loginInfo.age : -1),
                     code: genreCode[rankGenre.indexOf(props.genre)],
                 },
-                // headers: {
-                //     "X-Naver-Client-Id": Client_ID,
-                //     "X-Naver-Client-Secret": Client_PW
-                // }
             });
-            //console.log(res.data);
             const booklist = res.data.info.result.map((item, index) => ({
                     id: index,
                     rank: item.rank,
@@ -74,21 +56,16 @@ function LibraryRank() {
                     author: item.author.replace(/(<([^>]+)>)/ig,""),
                     isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
                     year: item.year.replace(/(<([^>]+)>)/ig,""),
-                    //description: item.description.replace(/(<([^>]+)>)/ig,""),
                     publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
-                    //link: item.link
                 })
             );
             
             let testlist = [];
-            //let totalpage = 0;
             let k = 0;
             let temp = [];
 
             for (let i = 0; i < display * 10; i++) {
                 if (typeof(booklist[i]) !== "undefined" && booklist[i] !== "undefined") {
-                    //console.log('booklist[i]',booklist[i]);
-                    //console.log(booklist[i].length);
                     temp[k] = booklist[i];
                     k++;
                 }
@@ -96,15 +73,9 @@ function LibraryRank() {
 
             if (temp.length !== 0) {
                 testlist = temp;
-                //totalpage++;
             }
-    
-            //setTotalPage(1);
             setBook(testlist);
-            //setSearchState(true);
             setLoadingState(false);
-            //console.log("term", searchTerm);
-            //console.log("testlist",testlist);
         }
         catch (error) {
         console.log(error);
@@ -112,35 +83,26 @@ function LibraryRank() {
     },[display, genreCode, loginInfo.age, loginState, rankGenre, searchTerm.enddate, searchTerm.startdate]);
 
     const onClickGenre = (props) => {
-        //console.log('props.genre',props.genre);
         if (props.genre !== searchGenre){
             setBook([]);
             setSearchGenre(props.genre);
         }
-        //getLibraryRank({genre: searchGenre})
     }
 
     const RenderGenre = (props) => {
-        //console.log(props);
-        // return (
-        //     <>
-        //         <span onClick={() => onClickGenre(props)}>{props.genre}</span>
-        //         {(props.i%11) < 10 ? <span>, </span> : <br></br>}
-        //     </>
-        // )
         if (searchGenre === props.genre) {
             return (
                 <>
                     <span className="GenreSelected" onClick={() => onClickGenre(props)}>{props.genre}</span>
-                    {(props.i%11) < 10 ? <span>, </span> : <br></br>}
+                    {(props.i%11) < 10 ? (props.i === 9) ? null : <img className='tab' src={tab} alt=''></img> : <br></br>}
                 </>
             );
         }
         else {
             return (
                 <>
-                    <span onClick={() => onClickGenre(props)}>{props.genre}</span>
-                    {(props.i%11) < 10 ? <span>, </span> : <br></br>}
+                    <span className="Genre" onClick={() => onClickGenre(props)}>{props.genre}</span>
+                    {(props.i%11) < 10 ? (props.i === 9) ? null : <img className='tab' src={tab} alt=''></img> : <br></br>}
                 </>
             );
         }
@@ -158,10 +120,6 @@ function LibraryRank() {
 
         
         let today = new Date();
-        // let defTemp = new Date(today.setMonth(today.getMonth()-3));
-        // const defaultTerm = { startdate:  `${defTemp.getFullYear()}-${defTemp.getMonth() + 1}-${defTemp.getDate()}`,
-        //                 enddate: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`};
-        // useEffect(() => {setSearchTerm(defaultTerm);}, [])
         const onChange = (e) => {
             setSelected(e.target.value);
             
@@ -202,6 +160,7 @@ function LibraryRank() {
 
         return (
             <div className="SelectTerm" >
+                <span>검색 기간 : </span>
                 <select name="term" onChange={onChange} value={selected}>
                     <option value="1주">1주</option>
                     <option value="1개월">1개월</option>
@@ -221,7 +180,12 @@ function LibraryRank() {
             <h2>{selected} {searchGenre} 인기대출도서</h2>
             {selectRankGenre()}
             <SelectTerm />
-            <h2 style={{textAlign: 'center'}}>{loadingState && books.length === 0 ? "Loading..." : null}</h2>
+            <div style={{textAlign: 'center'}}>{loadingState && books.length === 0 ? 
+                <>
+                    <h5 style={{marginTop: "20px"}}>검색중입니다</h5>
+                    <PuffLoader color={"#00ACFD"} loading={true} css={{display: "block", height: "100px", margin: "auto", marginTop: "20px"}} size={80} />
+                </>: null}
+            </div>
             {books.map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false} />)}
         </div>
     )

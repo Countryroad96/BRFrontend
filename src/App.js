@@ -1,6 +1,7 @@
 import React from 'react';
 import Main from "./components/Main";
 import "./style/App.scss";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
@@ -9,5 +10,5 @@ function App() {
     </div>
   );
 }
-     
+
 export default App;

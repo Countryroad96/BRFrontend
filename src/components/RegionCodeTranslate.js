@@ -1,5 +1,3 @@
-//import React, { useState, useEffect } from 'react';
-
 function RegionCodeTranslate(props) {
 
     const regionCode = {
@@ -628,70 +626,53 @@ function RegionCodeTranslate(props) {
         },
     }
 
-    //const [result, setResult] = useState({});
-
-    //useEffect(() => {
-        const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시',
-                        '세종특별자치시'];
+    const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시',
+                    '세종특별자치시'];
 
 
-        if (props.code === ""){
-            return({
-                fullName: "미설정",
-                regionName: "미설정",
-                cityName: "미설정",
-                townName: "미설정",
-            })
+    if (props.code === ""){
+        return({
+            fullName: "미설정",
+            regionName: "미설정",
+            cityName: "미설정",
+            townName: "미설정",
+        })
+    }
+    else {
+        let regionNum = props.code.substr(0,2);
+        let cityNum = props.code.substr(2,3);
+        let townNum = props.code.substr(2,3);
+        let cityName = "";
+        let townName = "";
+        let regionName = Object.keys(regionCode).find(key => regionCode[key] === regionNum);
+    
+        if (MetropolitanCity.includes(regionName)) {
+            cityName = Object.keys(dtl_regionCode[regionName]).find(key => dtl_regionCode[regionName][key] === cityNum);
+            return ({
+                fullName: regionName + " " + cityName,
+                regionName: regionName,
+                cityName: cityName,
+                });
         }
         else {
-            let regionNum = props.code.substr(0,2);
-            let cityNum = props.code.substr(2,3);
-            let townNum = props.code.substr(2,3);
-
-            //console.log('cityNum', cityNum);
-            
-
-            let cityName = "";
-            let townName = "";
-
-            let regionName = Object.keys(regionCode).find(key => regionCode[key] === regionNum);
-
-            //console.log(Object.keys(dtl_regionCode[regionName]));
-        
-            if (MetropolitanCity.includes(regionName)) {
-                cityName = Object.keys(dtl_regionCode[regionName]).find(key => dtl_regionCode[regionName][key] === cityNum);
-                return ({
-                    fullName: regionName + " " + cityName,
-                    regionName: regionName,
-                    cityName: cityName,
-                    });
-            }
-            else {
-                for (let i in dtl_regionCode[regionName]) {
-                    for (let j in dtl_regionCode[regionName][i]) {
-                        if (townNum === dtl_regionCode[regionName][i][j]) {
-                        cityName = i;
-                        townName = Object.keys(dtl_regionCode[regionName][i]).find(key => dtl_regionCode[regionName][i][key] === townNum);
-                        console.log("1", cityName);
-                        console.log("2", townName);
-                        }
+            for (let i in dtl_regionCode[regionName]) {
+                for (let j in dtl_regionCode[regionName][i]) {
+                    if (townNum === dtl_regionCode[regionName][i][j]) {
+                    cityName = i;
+                    townName = Object.keys(dtl_regionCode[regionName][i]).find(key => dtl_regionCode[regionName][i][key] === townNum);
+                    console.log("1", cityName);
+                    console.log("2", townName);
                     }
                 }
-                return ({
-                    fullName: regionName + " " + cityName + " " + townName,
-                    regionName: regionName,
-                    cityName: cityName,
-                    townName: townName,
-                });
             }
+            return ({
+                fullName: regionName + " " + cityName + " " + townName,
+                regionName: regionName,
+                cityName: cityName,
+                townName: townName,
+            });
         }
-        
-        //console.log('result', result);
-    //},[]);
-
-    //return result
-    
-
+    }
 }
 
 export default RegionCodeTranslate;

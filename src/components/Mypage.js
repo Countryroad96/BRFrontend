@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form';
 import { updateUserInfo, updateLogout } from '../modules/LoginState';
 import { selectRegion } from '../modules/SelectedRegionCode';
 import BookList from './BookList';
-//import RegionSelector from './RegionSelector';
 import RegionCodeTranslate from './RegionCodeTranslate';
 import Logout from './Logout';
 import axios from 'axios';
 import Modal from "./Modal.js";
+import Button from 'react-bootstrap/Button';
 import "../style/Mypage.scss"
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
@@ -24,8 +24,6 @@ function Mypage(props) {
     const [selectedAge, setSelectedAge] = useState(loginInfo.age);
     const [selectedRegion, setSelectRegion] = useState("서울특별시");
     const [selectedCity, setSelectCity] = useState("");
-    //const [selectTown, setSelectTown] = useState("");
-    //const [loadingState, setLoadingState] = useState(false);
     const[modal, setModal] = useState(false);
     const[modalInfo, setModalInfo] = useState({});
 
@@ -43,13 +41,6 @@ function Mypage(props) {
         "-1": "비공개",
     };
 
-    // const codeTranslate = () => {
-    //     console.log(RegionCodeTranslate({code: `${loginInfo.region + loginInfo.subregion}`}))
-    //     return(
-    //         <RegionCodeTranslate code={loginInfo.region + loginInfo.subregion} />   
-    //     );
-    // };
-
     useEffect(() => {
         if (loginInfo.status !== "registered") {
             setEditState(true);
@@ -57,16 +48,14 @@ function Mypage(props) {
     },[loginInfo]);
 
     const region = RegionCodeTranslate({code: `${loginInfo.region + loginInfo.subregion}`});
-    //console.log(region);
 
     const renderUser = () => {
-        //console.log("userInfo", loginInfo);
         return(
             <div className="UserInfo">
                 <span>성별 : {gender[loginInfo.gender]}</span>
                 <span>나이 : {age[loginInfo.age]}</span>
                 <span>지역 : {region.fullName}</span>
-                <button className="UpdateButton" onClick={() => setEditState(true)}>수정</button>
+                <Button variant="secondary" className="UpdateButton" onClick={() => setEditState(true)}>수정</Button>
             </div>
             
         )
@@ -83,7 +72,6 @@ function Mypage(props) {
         }
 
         const onSubmitui = (data) => {
-            //data.preventDefault();
             let GENDER_VALUE = data.genderArr;
             let AGE_VALUE = data.ageArr;
             let REGION_VALUE = data.regionArr;
@@ -95,13 +83,10 @@ function Mypage(props) {
 
             if (selectedCity !== "군/구" && selectedCity !== "시/군/구" && selectedCity.length > 0){
                 if (MetropolitanCity.includes(REGION_VALUE)){
-                    //console.log(regionCode[REGION_VALUE] + dtl_regionCode[REGION_VALUE][CITY_VALUE]);
                     regiont = regionCode[REGION_VALUE];
                     subregiont = dtl_regionCode[REGION_VALUE][CITY_VALUE];
                 }
                 else{
-                    //console.log(regionCode[REGION_VALUE]
-                    //            + dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE]);
                     regiont = regionCode[REGION_VALUE];
                     subregiont = dtl_regionCode[REGION_VALUE][CITY_VALUE][TOWN_VALUE];
                 }
@@ -120,26 +105,17 @@ function Mypage(props) {
                                 "Content-Type": `application/json`,
                             },
                         }).then((res) => {
-                            //console.log("update",res.data);
                             setEditState(false)
                             setModalInfo({
                                 title: "회원정보수정 성공",
                                 description: "회원정보 수정에 성공하였습니다.",
                                 clickoff: true,
-                                callback: null
+                                callback: null,
+                                yesButtonText: "확인",
+                                activateNo: false
                             });
                             setModal(true);
                         })
-                        
-        
-                        //setLoadingState(false);
-                        // setModalInfo({
-                        //     title: "회원정보수정 성공",
-                        //     description: "회원정보 수정에 성공하였습니다.",
-                        //     clickoff: true,
-                        //     callback: props.setEditState(false)
-                        // });
-                        // setModal(true);
                         dispatch(updateUserInfo({
                             ...loginInfo,
                             gender: GENDER_VALUE,
@@ -152,7 +128,6 @@ function Mypage(props) {
                             region: regiont,
                             subregion: subregiont
                         }))
-                        //setEditState(false);
                     }
                     catch (error) {
                         console.log(error);
@@ -168,11 +143,6 @@ function Mypage(props) {
             else{
                 alert("시/군/구 를 선택해주세요. 기본설정은 서울 종로구 입니다.")
             }
-
-            
-            
-            //setLoadingState(true);
-            //console.log("sendInfo", newloginInfo);
         }
 
         const regionCode = {
@@ -803,13 +773,6 @@ function Mypage(props) {
     
         const MetropolitanCity = ['서울특별시', '부산광역시', '대구광역시', '인천광역시', '광주광역시', '대전광역시', '울산광역시',
                             '세종특별자치시'];
-
-        // const renderRegionOption = () => {
-        //     for (let k in regionCode) {
-        //         const v = regionCode[k];
-        //         regionOption(k, v);
-        //     }
-        // }
     
         const regionOption = (k, v) => {
             return (
@@ -818,8 +781,6 @@ function Mypage(props) {
         }
     
         const RenderSelectTown = () => {
-            //console.log(Object.keys(dtl_regionCode[selectRegion])[0]);
-            //setSelectCity(Object.keys(dtl_regionCode[selectRegion]));
             return (
                 <select {...register("townArr")}>
                         {Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
@@ -870,8 +831,8 @@ function Mypage(props) {
                         null : RenderSelectTown() }
                 </div>
                 <div className="SubmitButton">
-                    <input type="submit" value="수정" />
-                    <input type="button" onClick={() => ( loginInfo.status === "new" ? alert("초기정보를 입력해주세요.") : setEditState(false))} value="취소" />
+                    <Button variant="secondary" type="submit">등록</Button>
+                    <Button variant="secondary" onClick={() => ( loginInfo.status === "new" ? alert("초기정보를 입력해주세요.") : setEditState(false))}>취소</Button>
                 </div>
             </form>
         )
@@ -882,13 +843,14 @@ function Mypage(props) {
             title: "회원탈퇴",
             description: "회원탈퇴 하시겠습니까? 계정의 모든정보가 폐기됩니다.",
             clickoff: false,
+            yesButtonText: "예",
+            activateNo: true,
             callback: deleteUserApi
         });
         setModal(true);
     }
 
     const deleteUserApi = () => {
-        //setLoadingState(true);
         try{
             axios({
                 method: "DELETE",
@@ -897,19 +859,13 @@ function Mypage(props) {
                     username: loginInfo.username
                 }
             }).then((res) => {
-                //console.log("delete user",res.data);
                 props.setOpenMypage(false);
                 props.setShowRankBest(true);
                 dispatch(updateLogout());
-                //setLoadingState(false);
             })
-            
-
-            
         }
         catch (error) {
             console.log(error);
-            //setLoadingState(false);
         }
     }
 
@@ -919,35 +875,29 @@ function Mypage(props) {
                 loginInfo.history.map((book, i) => <BookList key={book.bookId} book={book} i={i} frommypage={true} />)
             )
         } else{
-            return("비어있음")
+            return(
+                <h4 style={{textAlign: "center"}}>비어있음</h4>
+            )
         }
     },[loginInfo])
     
-
     return(
         <div className="Mypage">
             <h2>{loginInfo.name}님의 마이페이지</h2>
             {editState ? renderEditUser() : renderUser()}
                 
-
             <div className="GoogleLogoutButton">
-                <Logout 
-                    // setLoginInfo={setLoginInfo}
-                    // setLoginState={setLoginState}
+                <Logout
                     setOpenMypage={props.setOpenMypage}
                     setShowRankBest={props.setShowRankBest}
                 />
             </div>
             <div>
-                <button onClick={deleteUser}>회원탈퇴</button>
+                <Button variant="secondary" onClick={deleteUser}>회원탈퇴</Button>
             </div>
-
             <div className="SearchHistory">
-                <h2>검색기록</h2>
+                <h2 style={{width: "1200px"}}>검색기록</h2>
                 {renderHistory()}
-                {/* {   loginInfo.history.length > 0 ?
-                    loginInfo.history.map((book, i) => <BookList key={book.bookId} book={book} i={i} frommypage={true} />)
-                    : "비어있음" }        */}
             </div>
             {modal ? <Modal
                 setModal={setModal} 
@@ -955,6 +905,8 @@ function Mypage(props) {
                 description={modalInfo.description}
                 clickoff={false}
                 callback={modalInfo.callback}
+                yesButtonText={modalInfo.yesButtonText}
+                activateNo={modalInfo.activateNo}
                 setOpenMypage={props.setOpenMypage}
                 setShowRankBest={props.setShowRankBest}
                 dispatch={dispatch}
@@ -962,11 +914,6 @@ function Mypage(props) {
             /> : null}
         </div>
     );
-
-    // useEffect(() => {
-    //     RegionSelector();
-    // }, []);
-
 }
 
 export default Mypage;

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useState } from "react";
-//import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
 import { useDispatch } from 'react-redux';
 import { updateLogin } from '../modules/LoginState';
@@ -26,7 +25,6 @@ function Login(props) {
                     "Content-Type": `application/json`,
                 },
             });
-            //console.log("loginstate",res.data);
 
             let userInfo = {};
 
@@ -43,20 +41,6 @@ function Login(props) {
                     status: "registered"
                 };
 
-                //console.log("Login Info",userInfo);
-                
-                //props.setLoginInfo(userInfo);
-        
-                // setModalInfo({
-                //     title: "Login Success",
-                //     description: `Welcome ${userInfo.name}`,
-                //     clickoff: true,
-                //     callback: props.setLoginState(true)
-                // });
-                // setModal(true);
-        
-                
-        
                 dispatch(updateLogin(userInfo));
                 dispatch(selectRegion({
                     region: userInfo.region,
@@ -76,20 +60,11 @@ function Login(props) {
                     history: [],
                     status: "new"
                 };
-                //console.log("Login Info",userInfo);
 
                 alert("신규회원입니다. 회원정보를 입력해주세요.");
 
                 setLoadingState(false);
-                // setModalInfo({
-                //     title: "신규가입회원",
-                //     description: "회원정보를 등록해주세요!",
-                //     clickoff: false,
-                //     callback: dispatch(updateLogin(userInfo))
-                // });
-                // setModal(true);
                 dispatch(updateLogin(userInfo))
-                //props.setLoginState(true);
                 
             }
             else {
@@ -104,14 +79,8 @@ function Login(props) {
         }
     };
 
-    // const loginCallback = () => {
-    //     dispatch(updateLogin(userInfo));
-    //     //props.setLoginState(true)
-    // }
-    
     //로그인 실패시 실행
     const onFailure = (res) => {
-        //console.log("login fail",res)
 
         setModalInfo({
             title: "Login Fail",

@@ -7,26 +7,24 @@ import BookList from "./BookList";
 import Mypage from "./Mypage";
 import RegionCodeTranslate from './RegionCodeTranslate';
 import Login from './Login';
-//import Logout from './Logout';
-import "../style/Main.scss";
-
+import InputGroup from 'react-bootstrap/InputGroup'
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import PuffLoader from 'react-spinners/PuffLoader';
 import RegionSelector from './RegionSelector';
 import { selectRegion } from '../modules/SelectedRegionCode';
-
+import "../style/Main.scss";
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
 function Main() {
 
-    //const [search, setSearch] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [books, setBook] = useState([]);
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
     const [display] = useState(10);
     const [searchState, setSearchState] = useState(false);
-    // const [loginInfo, setLoginInfo] = useState({});
-    // const [loginState, setLoginState] = useState(false);
     const [openMypage, setOpenMypage] = useState(false);
     const [showRankBest, setShowRankBest] = useState(true);
     const [openRegionSelector, setOpenRegionSelector] = useState(false);
@@ -57,7 +55,6 @@ function Main() {
                 },
 
             });
-            //console.log(res.data);
 
             const booklist = res.data.info.result.map((item, index) => ({
                 id: index,
@@ -79,33 +76,20 @@ function Main() {
                 let temp = [];
                 for (let i = j*10; i < (j+1)*10; i++) {
                     if (typeof(booklist[i]) !== "undefined" && booklist[i] !== "undefined") {
-                        //console.log('booklist[i]',booklist[i]);
-                        //console.log(booklist[i].length);
                         temp[k] = booklist[i];
                         k++;
                     }
                 }
-                //console.log('temp', temp);
 
                 if (temp.length !== 0) {
                     testlist[j] = temp;
                     totalpage++;
                 }
             };
-
-            //console.log("final list", final);
-            //console.log("test list", testlist);
-
-            
-            //setBook({books: testlist, finish: true});
             setTotalPage(totalpage);
             setBook(testlist);
             setSearchState(true);
             setLoadingState(false);
-            //console.log("res.data",res.data);
-            //console.log("testlist",testlist);
-            //console.log('booklist', booklist);
-            //console.log("books",books); // 콘솔에 undefined라고 찍힘
             
         } 
         catch (error) {
@@ -115,8 +99,11 @@ function Main() {
     };
     
     const onSubmit = (e) => {
+        if (searchText === ""){
+            alert("검색어를 입력해주세요.");
+            return;
+        }
         e.preventDefault();
-        //console.log(searchText);
         setOpenMypage(false);
         setBook([]);
         setSearchState(false);
@@ -144,14 +131,16 @@ function Main() {
     const renderSearchlist = () => {
         return (
             <div className="SearchList">
+                <h1>검색 결과</h1>
                 {books[page-1].map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false}/>)}
+                {renderButton()}
             </div>
         )
     }
 
     const RenderPageButton = (props) => {
         return (
-            <button className="SearchPageButton" onClick={() => setPage(props.i+1)}>{props.v}</button>
+            <Button variant="secondary" className="SearchPageButton" onClick={() => setPage(props.i+1)}>{props.v}</Button>
         )
     }
 
@@ -160,7 +149,6 @@ function Main() {
         for (let i = 0; i < totalPage; i++){
             pagelist.push(i+1);
         }
-        //console.log('maxpage',totalPage);
         if (totalPage > 1){
             return (
                 <div className="SearchPager">  
@@ -208,54 +196,70 @@ function Main() {
     }
 
     const onClickRegionReset = () => {
-        dispatch(selectRegion({
-            region: loginInfo.region,
-            subregion: loginInfo.subregion,
-        }))
+        if (loginState) {
+            dispatch(selectRegion({
+                region: loginInfo.region,
+                subregion: loginInfo.subregion,
+            }));
+        }
+        else{
+            dispatch(selectRegion({
+                region: "11",
+                subregion: "010",
+            }));
+        }
     }
 
     return (
-            <div className="SiteFrame">
+        <div className="SiteFrame">
+            <div className="SiteHeadWrap">
                 <div className="SiteHead">
-                    <div className="SiteName" onClick={onClickHomepage}>도서 추천 및 정보 제공 사이트</div>
+                    <h2 className="SiteName" onClick={onClickHomepage}>Book Recommend</h2>
                     <div className="Input">
-                        <input
-                            className="InputBar"
-                            type="text"       
+                    <span>현재검색지역 : {region.fullName}</span><br/>
+                    <>
+                        <InputGroup className="InputBar mb-3">
+                            <FormControl
+                            aria-label="Recipient's username"
+                            aria-describedby="basic-addon2"
+                            placeholder="제목, 저자, ISBN"
                             value={searchText}                 
                             onKeyUp={onKeyUp}
                             onChange={e => setSearchText(e.target.value)}
-                            autoFocus
-                        />
-                        <button
-                            className="InputButton"
-                            onClick={onSubmit}>검색</button>
+                            />
+                            <Button variant="secondary" id="button-addon2" onClick={onSubmit} >
+                            검색
+                            </Button>
+                        </InputGroup>
+                    </>
                     </div>
                     <div className="SearchRegionSelector">
-                        <span onClick={onClickOpReSel}>도서관검색지역선택</span><br/>
+                        <span onClick={onClickOpReSel}>도서관검색지역선택 {openRegionSelector? "▲" : "▼"}</span><br/>
                         
                         {openRegionSelector ? 
-                        <>
-                        <span>현재검색지역 : {region.fullName}</span><br/>
-                        <RegionSelector changeLoginstate={false} setRegion={true}/>
-                        <button className="RegionResetButton" onClick={onClickRegionReset}>초기화</button>
-                        </>: null}
+                            <>
+                                <RegionSelector changeLoginstate={false} setRegion={true} onClickRegionReset={onClickRegionReset}/>
+                            </>: null}
                     </div>
                         {loginState ? renderUserInfo() : <Login 
                         setOpenMypage={setOpenMypage}
-
-                        // setLoginInfo={setLoginInfo}
-                        // setLoginState={setLoginState}
                         />}
                 </div>
+            </div>
+            
+            <div className="SiteBodyWrap">
                 <div className="SiteBody">
-                    {loadingState ? 'Loading...' : null}
-                    {openMypage ? renderMypage() : null}
-                    {(searchState) ? renderSearchlist() : null}
-                    {showRankBest ? (<><Bestseller /><LibraryRank /></>) : null}
-                    {(searchState) ? renderButton() : null}
+                {loadingState ? 
+                    <>
+                        <h5 style={{marginTop: "20px", textAlign: "center"}}>검색중입니다</h5>
+                        <PuffLoader color={"#00ACFD"} loading={true} css={{display: "block", height: "100px", margin: "auto", marginTop: "20px"}} size={80} />
+                    </> : null}
+                {openMypage ? renderMypage() : null}
+                {(searchState) ? renderSearchlist() : null}
+                {showRankBest ? (<><Bestseller /><LibraryRank /></>) : null}
                 </div>
             </div>
+        </div>
     );
 }
 
