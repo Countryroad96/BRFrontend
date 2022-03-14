@@ -29,6 +29,7 @@ function Main() {
     const [showRankBest, setShowRankBest] = useState(true);
     const [openRegionSelector, setOpenRegionSelector] = useState(false);
     const [loadingState, setLoadingState] = useState(false);
+    const [isMouseOverUserInfo, setIsMouseOverUserInfo] = useState(false);
 
     const loginState = useSelector(state => state.updateLoginState.login);
     const loginInfo = useSelector(state => state.updateLoginState.user);
@@ -152,7 +153,7 @@ function Main() {
         if (totalPage > 1){
             return (
                 <div className="SearchPager">  
-                    {pagelist.map((v, i) => <RenderPageButton key={i} v={v} i={i} />)}
+                    {pagelist.map((v, i) => <RenderPageButton key={v} v={v} i={i} />)}
                 </div>
             );
         }        
@@ -167,9 +168,17 @@ function Main() {
         setOpenMypage(true);
     }
 
+    const onUserInfoMouseOver = () => {
+        setIsMouseOverUserInfo(true);
+    }
+
+    const onUserInfoMouseOut = () => {
+        setIsMouseOverUserInfo(false);
+    }
+
     const renderUserInfo = useCallback(() => {
         return(
-            <div className="UserInfoBox" onClick={onUserInfoClick}>
+            <div className="UserInfoBox" onClick={onUserInfoClick} onMouseOver={onUserInfoMouseOver} onMouseOut={onUserInfoMouseOut}>
                 <img className='UserThumb' src={loginInfo.imgURL} alt='userThumb'></img>
                 <div className='UserInfo'>
                     {loginInfo.name}님 환영합니다.

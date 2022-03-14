@@ -51,12 +51,13 @@ function LibraryRank() {
             const booklist = res.data.info.result.map((item, index) => ({
                     id: index,
                     rank: item.rank,
-                    title: item.title.replace(/(<([^>]+)>)/ig,""),
+                    description: item.description,
+                    title: item.title,
                     image: item.image,
-                    author: item.author.replace(/(<([^>]+)>)/ig,""),
-                    isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
-                    year: item.year.replace(/(<([^>]+)>)/ig,""),
-                    publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
+                    year: item.year,
+                    author: item.author,
+                    isbn: item.isbn,
+                    publisher: item.publisher,
                 })
             );
             
@@ -79,6 +80,7 @@ function LibraryRank() {
         }
         catch (error) {
         console.log(error);
+        setLoadingState(false);
         }
     },[display, genreCode, loginInfo.age, loginState, rankGenre, searchTerm.enddate, searchTerm.startdate]);
 
@@ -172,7 +174,6 @@ function LibraryRank() {
         )
     }
 
-    //useEffect(() => {}, [])
     useEffect(() => {getLibraryRank({genre: searchGenre});},[getLibraryRank, searchGenre]);
 
     return (

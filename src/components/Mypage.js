@@ -24,8 +24,10 @@ function Mypage(props) {
     const [selectedAge, setSelectedAge] = useState(loginInfo.age);
     const [selectedRegion, setSelectRegion] = useState("서울특별시");
     const [selectedCity, setSelectCity] = useState("");
-    const[modal, setModal] = useState(false);
-    const[modalInfo, setModalInfo] = useState({});
+    const [modal, setModal] = useState(false);
+    const [modalInfo, setModalInfo] = useState({});
+    const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
 
     const gender = ["남성", "여성", "비공개"];
     const age = {
@@ -40,6 +42,20 @@ function Mypage(props) {
         "60": "60세 이상",
         "-1": "비공개",
     };
+
+    useEffect(() => {
+        if (loginInfo.history.length > 0){
+            let temp = parseInt(loginInfo.history.length / 10);
+
+            if (loginInfo.history.length % 10 > 0) {
+                temp += 1;
+            }
+            setTotalPage(temp);
+        }
+        else{
+            setTotalPage(0)
+        }
+    },[loginInfo]);
 
     useEffect(() => {
         if (loginInfo.status !== "registered") {
@@ -869,18 +885,58 @@ function Mypage(props) {
         }
     }
 
+    const RenderPageButton = (props) => {
+        return (
+            <Button variant="secondary" className="SearchPageButton" onClick={() => setPage(props.i+1)}>{props.v}</Button>
+        )
+    }
+
+    const renderButton = useCallback(() => {
+        let pagelist = [];
+        for (let i = 0; i < totalPage; i++){
+            pagelist.push(i+1);
+        }
+        if (totalPage > 1){
+            return (
+                <div className="SearchPager">  
+                    {pagelist.map((v, i) => <RenderPageButton key={v} v={v} i={i} />)}
+                </div>
+            );
+        }        
+    },[totalPage])
+
     const renderHistory = useCallback(() => {
+        let tempHistory = [];
+        let count = 0;
+        let temp = [];
+
+        for (let i = 0; i < loginInfo.history.length; i++){
+            if (count >= 10){
+                count = 0;
+                tempHistory.push(temp);
+                temp = [];
+            }
+            if (i === loginInfo.history.length - 1){
+                tempHistory.push(temp);
+            }
+            temp.push(loginInfo.history[i]);
+            count += 1;
+        }
+
         if (loginInfo.history.length > 0) {
-            return(
-                loginInfo.history.map((book, i) => <BookList key={book.bookId} book={book} i={i} frommypage={true} />)
+            return (
+                <>
+                    {tempHistory[page-1].map((book, i) => <BookList key={book.bookId} book={book} i={i} frommypage={true}/>)}
+                    {renderButton()}
+                </>
             )
         } else{
             return(
                 <h4 style={{textAlign: "center"}}>비어있음</h4>
             )
         }
-    },[loginInfo])
-    
+    },[loginInfo, page, renderButton]);
+
     return(
         <div className="Mypage">
             <h2>{loginInfo.name}님의 마이페이지</h2>

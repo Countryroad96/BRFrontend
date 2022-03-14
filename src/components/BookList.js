@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
 import RegionCodeTranslate from './RegionCodeTranslate';
@@ -32,6 +32,13 @@ const BookList = (props) => {
 
     let isDelete = false;
 
+    useEffect(() => {
+        if (showDetail)
+        {
+            getBookDetail();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedRegion]);
 
     const getBookDetail =  useCallback(async () => {
         setLoadingState(true);
@@ -46,7 +53,9 @@ const BookList = (props) => {
                     date: today,
                     author: book.author,
                     publisher: book.publisher,
-                    frommypage: (loginState ? frommypage === true ? true : false : true)
+                    frommypage: (loginState ? frommypage === true ? true : false : true),
+                    image: book.image,
+                    isExtraSearchNeeded: (book.description ? false : true)
                 }), {
                 headers: {
                     "Content-Type": `application/json`,
@@ -55,6 +64,9 @@ const BookList = (props) => {
             
             if(res.data.message === "success"){
                 setBookDetail(res.data);
+                if (book.description === null || book.description === ""){
+                    book.description = res.data.info.description;
+                }
                 if (res.data.info.bookId > 0){
                     let temp = loginInfo.history;
                 
@@ -63,8 +75,10 @@ const BookList = (props) => {
                         title: book.title,
                         date: today,
                         author: book.author,
+                        description: book.description,
                         publisher: book.publisher,
                         isbn: book.isbn,
+                        image: book.image
                     });
                     dispatch(updateUserInfo({
                         ...loginInfo,
@@ -74,6 +88,7 @@ const BookList = (props) => {
                 }
             }
             else {
+                console.log(res.data.message);
                 setBookDetail({info:{price: "0", stock: ""} ,message: "failure"});
             }
             
@@ -124,6 +139,7 @@ const BookList = (props) => {
         }
         else{
             if (isDelete) {
+                setShowDetail(false);
                 return;
             }
             getBookDetail();
@@ -194,7 +210,7 @@ const BookList = (props) => {
     const renderDetail = useCallback((book) => {
 
         let temp = RegionCodeTranslate({code: selectedRegion.region + selectedRegion.subregion});
-
+        
         return (
             <>
                 <tr style={{backgroundColor: "#ffffff"}}>
@@ -203,7 +219,7 @@ const BookList = (props) => {
                             <h4>책 정보</h4>
                             <span>{(book.description) ? book.description : "책 소개말이 없습니다."}</span><br/><br/>
                             <span>가격 : {bookDetail.info.price}원</span><br/>
-                            <span>재고 : {bookDetail.info.stock === "available" ? "재고 있음" : "재고 없음"}</span><br/><br/>
+                            <span>재고 : {bookDetail.info.stock === "available" ? <>재고있음 <a href={bookDetail.info.link} target="_blank" rel="noreferrer">구매하러 가기 (알라딘)</a></> : "재고 없음"}</span><br/><br/>
                             <div className="LibraryInfo">
                                 <h4>도서관 소장 정보</h4>
                                 <div className="LibraryDetailInfo">
@@ -244,7 +260,7 @@ const BookList = (props) => {
     }
     
     return (
-        <div className="BookInfoBox" >
+        <div className="BookInfoBox">
             <table style={{width: "100%"}}>
                 <tbody>
                     <tr onClick={() => onClickfunc(props={e: i+1, showDtl: showDetail})} style={{display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "125px", marginTop: "10px", backgroundColor: "#ffffff"}}>

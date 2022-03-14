@@ -34,8 +34,10 @@ function Bestseller() {
             const booklist = res.data.info.bookList.map((item, index) => ({
                     id: index,
                     rank: item.rank,
+                    description: item.description.replace(/(<([^>]+)>)/ig,""),
                     title: item.title.replace(/(<([^>]+)>)/ig,""),
                     image: item.image,
+                    year: item.year,
                     author: item.author.replace(/(<([^>]+)>)/ig,""),
                     isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
                     publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
@@ -62,6 +64,7 @@ function Bestseller() {
         }
         catch (error) {
         console.log(error);
+        setLoadingState(false);
         }
     },[bestsellerGenre, display, genreCode]);
 
