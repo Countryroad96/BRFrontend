@@ -33,8 +33,8 @@ function Login(props) {
                     name: googleRes.profileObj.name, 
                     gender: res.data.info.gender,
                     age: res.data.info.age,
-                    region: (res.data.info.region === "" ? "11" : res.data.info.region),
-                    subregion: (res.data.info.subregion === "" ? "010" : res.data.info.subregion),
+                    region: (res.data.info.region === "" || !res.data.info.region ? "11" : res.data.info.region),
+                    subregion: (res.data.info.subregion === "" || !res.data.info.subregion ? "010" : res.data.info.subregion),
                     imgURL: googleRes.profileObj.imageUrl, 
                     username: String(googleRes.profileObj.googleId),
                     history: res.data.info.history,
@@ -74,7 +74,7 @@ function Login(props) {
             
         }
         catch (error) {
-            alert("로그인 실패");
+            alert("로그인 에러");
             console.log(error);
         }
     };
@@ -86,7 +86,9 @@ function Login(props) {
             title: "Login Fail",
             description: res.error,
             clickoff: true,
-            callback: null
+            callback: null,
+            yesButtonText: "확인",
+            activateNo: false
         });
         setModal(true);
     }

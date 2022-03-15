@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "NanumSquareLight";
+  src: url("./style/font/NanumSquareL.ttf") format("truetype");
+}
+
 body {
   overflow-y: overlay;
   margin: 0;

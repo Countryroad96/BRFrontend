@@ -6,7 +6,7 @@
   .BookImg {
     max-width: 82px;
     margin-left: 2px;
-    margin-right: 5px;
+    margin-right: 40px;
   }
 
   .BookDetailInfo {
@@ -26,12 +26,13 @@
       .Library {
         display: flex;
         justify-content: space-between;
+        -moz-user-select: text;
+        -webkit-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
 
-        .LibAddress {
-          -moz-user-select: text;
-          -webkit-user-select: text;
-          -ms-user-select: text;
-          user-select: text;
+        .LibraryDescription {
+          margin-top: 20px;
         }
       }
     }

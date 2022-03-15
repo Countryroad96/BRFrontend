@@ -41,8 +41,8 @@ const Modal = (props) => {
                     <p></p>
                     <p>{props.description}</p>
                     <div>
-                        <Button variant="secondary" onClick={onClickYes} >{props.yesButtonText}</Button>
-                        {props.activateNo ? <Button variant="secondary" onClick={onClickNo} >아니오</Button> : null}
+                        <Button variant="secondary" onClick={onClickYes} >{props.yesButtonText ? props.yesButtonText : "확인"}</Button>
+                        {props.activateNo ? <Button variant="secondary" onClick={onClickNo} style={{marginLeft:"5px"}}>아니오</Button> : null}
                     </div>
                 </div>
             </div>

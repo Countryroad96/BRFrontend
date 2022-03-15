@@ -223,9 +223,12 @@ function Main() {
         <div className="SiteFrame">
             <div className="SiteHeadWrap">
                 <div className="SiteHead">
-                    <h2 className="SiteName" onClick={onClickHomepage}>Book Recommend</h2>
+                    <div className="SiteName" onClick={onClickHomepage}>
+                        <img className="SiteIcon" src="../favicon512.png" alt="BookRecommendIcon" />
+                        <span>Book Recommend</span>
+                    </div>
                     <div className="Input">
-                    <span>현재검색지역 : {region.fullName}</span><br/>
+                    <span>현재검색지역 : {region.fullName}</span>
                     <>
                         <InputGroup className="InputBar mb-3">
                             <FormControl
@@ -241,7 +244,6 @@ function Main() {
                             </Button>
                         </InputGroup>
                     </>
-                    </div>
                     <div className="SearchRegionSelector">
                         <span onClick={onClickOpReSel}>도서관검색지역선택 {openRegionSelector? "▲" : "▼"}</span><br/>
                         
@@ -250,6 +252,8 @@ function Main() {
                                 <RegionSelector changeLoginstate={false} setRegion={true} onClickRegionReset={onClickRegionReset}/>
                             </>: null}
                     </div>
+                    </div>
+                    
                         {loginState ? renderUserInfo() : <Login 
                         setOpenMypage={setOpenMypage}
                         />}
@@ -266,6 +270,12 @@ function Main() {
                 {openMypage ? renderMypage() : null}
                 {(searchState) ? renderSearchlist() : null}
                 {showRankBest ? (<><Bestseller /><LibraryRank /></>) : null}
+                </div>
+            </div>
+
+            <div className="SiteFooterWrap">
+                <div className="SiteFooter">
+                    <span>이 서비스에는 네이버에서 제공한 나눔글꼴이 적용되어 있습니다.</span>
                 </div>
             </div>
         </div>

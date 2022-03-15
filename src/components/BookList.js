@@ -55,7 +55,7 @@ const BookList = (props) => {
                     publisher: book.publisher,
                     frommypage: (loginState ? frommypage === true ? true : false : true),
                     image: book.image,
-                    isExtraSearchNeeded: (book.description ? false : true)
+                    isExtraSearchNeeded: (book.description && book.description !== "" ? false : true)
                 }), {
                 headers: {
                     "Content-Type": `application/json`,
@@ -64,13 +64,13 @@ const BookList = (props) => {
             
             if(res.data.message === "success"){
                 setBookDetail(res.data);
-                if (book.description === null || book.description === ""){
+                if (!book.description || book.description === ""){
                     book.description = res.data.info.description;
                 }
                 if (res.data.info.bookId > 0){
                     let temp = loginInfo.history;
                 
-                    temp.push({
+                    temp.unshift({
                         bookId: res.data.info.bookId,
                         title: book.title,
                         date: today,
@@ -190,9 +190,8 @@ const BookList = (props) => {
                         <Accordion.Header>{lib.name}</Accordion.Header>
                         <Accordion.Body>
                             <div className="Library">
-                                    <div>
-                                        <br/>
-                                        <span className={"LibAddress"}>주&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;소 : {lib.address}</span><br/><br/>
+                                    <div className="LibraryDescription">
+                                        <span>주&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;소 : {lib.address}</span><br/><br/>
                                         <span>대출상태 : {lib.available === 'Y' ? "대출가능" : "대출중"}</span>
                                     </div>
                                     <RenderMaps location={{

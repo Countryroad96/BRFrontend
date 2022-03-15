@@ -739,8 +739,8 @@ function RegionSelector(props) {
                     {MetropolitanCity.includes(selectedRegion) || selectedCity.length < 1  ?
                     null : Object.keys(dtl_regionCode[selectedRegion][selectedCity]).map(town => regionOption(town))}
                 </select>
-                <Button variant="secondary" size="sm" type="submit">지역선택</Button>
-                <Button variant="secondary" size="sm" onClick={props.onClickRegionReset}>초기화</Button>
+                <Button className="RegionSelectButton" variant="secondary" size="sm" type="submit">지역선택</Button>
+                <Button className="RegionSelectButton" variant="secondary" size="sm" onClick={props.onClickRegionReset}>초기화</Button>
             </form>
         </div>
         
