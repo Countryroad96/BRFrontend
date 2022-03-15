@@ -41,7 +41,6 @@ function Bestseller() {
                     author: item.author.replace(/(<([^>]+)>)/ig,""),
                     isbn: item.isbn.replace(/(<([^>]+)>)/ig,""),
                     publisher: item.publisher.replace(/(<([^>]+)>)/ig,""),
-                    
                 })
             );
             
