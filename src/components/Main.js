@@ -7,7 +7,6 @@ import BookList from "./BookList";
 import Mypage from "./Mypage";
 import RegionCodeTranslate from './RegionCodeTranslate';
 import Login from './Login';
-import Modal from "./Modal";
 import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
@@ -30,8 +29,6 @@ function Main() {
     const [showRankBest, setShowRankBest] = useState(true);
     const [openRegionSelector, setOpenRegionSelector] = useState(false);
     const [loadingState, setLoadingState] = useState(false);
-    const [modal, setModal] = useState(false);
-    const [modalInfo, setModalInfo] = useState({});
     const [isMouseOverUserInfo, setIsMouseOverUserInfo] = useState(false);
 
     const loginState = useSelector(state => state.updateLoginState.login);
@@ -220,15 +217,6 @@ function Main() {
                 subregion: "010",
             }));
         }
-        // setModalInfo({
-        //     title: "검색지역초기화",
-        //     description: "도서관 검색 지역이 기존 설정으로 초기화 되었습니다.",
-        //     clickoff: true,
-        //     yesButtonText: "확인",
-        //     activateNo: false,
-        //     callback: null
-        // });
-        // setModal(true);
         alert("지역 정보가 기존 설정으로 초기화 되었습니다.");
     }
 
@@ -291,16 +279,6 @@ function Main() {
                     <span>이 서비스에는 네이버에서 제공한 나눔글꼴이 적용되어 있습니다.</span>
                 </div>
             </div>
-            {modal ? <Modal
-                setModal={setModal} 
-                title={modalInfo.title}
-                description={modalInfo.description}
-                clickoff={modalInfo.clickoff}
-                callback={modalInfo.callback}
-                yesButtonText={modalInfo.yesButtonText}
-                activateNo={modalInfo.activateNo}
-                dispatch={dispatch}
-            /> : null}
         </div>
     );
 }

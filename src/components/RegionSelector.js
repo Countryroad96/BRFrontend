@@ -4,7 +4,6 @@ import { updateUserInfo } from '../modules/LoginState';
 import { selectRegion } from '../modules/SelectedRegionCode';
 import { useForm } from 'react-hook-form';
 import Button from 'react-bootstrap/Button';
-import Modal from './Modal';
 
 
 
@@ -15,8 +14,6 @@ function RegionSelector(props) {
     const [selectedRegion, setSelectRegion] = useState("서울특별시");
     const [selectedCity, setSelectCity] = useState("");
     const [selectedTown, setSelectTown] = useState("전체");
-    const [modal, setModal] = useState(false);
-    const [modalInfo, setModalInfo] = useState({});
 
     const regionCode = {
         서울특별시: '11',
@@ -677,15 +674,6 @@ function RegionSelector(props) {
                 if(props.setRegion) {
                     dispatch(selectRegion(temp));
                 }
-                // setModalInfo({
-                //     title: "검색지역변경",
-                //     description: "도서관 검색 지역 선택이 완료되었습니다.",
-                //     clickoff: true,
-                //     yesButtonText: "확인",
-                //     activateNo: false,
-                //     callback: null
-                // });
-                // setModal(true);
                 alert("지역선택이 완료되었습니다.");
             }
             else{
@@ -706,15 +694,6 @@ function RegionSelector(props) {
                     if(props.setRegion) {
                         dispatch(selectRegion(temp))
                     };
-                    // setModalInfo({
-                    //     title: "검색지역변경",
-                    //     description: "도서관 검색 지역 선택이 완료되었습니다.",
-                    //     clickoff: true,
-                    //     yesButtonText: "확인",
-                    //     activateNo: false,
-                    //     callback: null
-                    // });
-                    // setModal(true);
                     alert("지역선택이 완료되었습니다.");
                 }
                 else{
@@ -764,16 +743,6 @@ function RegionSelector(props) {
                 <Button className="RegionSelectButton" variant="secondary" size="sm" type="submit">지역선택</Button>
                 <Button className="RegionSelectButton" variant="secondary" size="sm" onClick={props.onClickRegionReset}>초기화</Button>
             </form>
-            {modal ? <Modal
-                setModal={setModal} 
-                title={modalInfo.title}
-                description={modalInfo.description}
-                clickoff={modalInfo.clickoff}
-                callback={modalInfo.callback}
-                yesButtonText={modalInfo.yesButtonText}
-                activateNo={modalInfo.activateNo}
-                dispatch={dispatch}
-            /> : null}
         </div>
         
     )
