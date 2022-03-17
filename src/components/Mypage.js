@@ -939,22 +939,25 @@ function Mypage(props) {
 
     return(
         <div className="Mypage">
-            <h2>{loginInfo.name}님의 마이페이지</h2>
+            <h5>{loginInfo.name}님</h5>
             {editState ? renderEditUser() : renderUser()}
-                
+
+            <Button variant="secondary" className="UpdateButton" onClick={() => props.onUserInfoClick()}>검색이력</Button>
+
             <div className="GoogleLogoutButton">
                 <Logout
                     setOpenMypage={props.setOpenMypage}
                     setShowRankBest={props.setShowRankBest}
                 />
+                
             </div>
-            <div>
-                <Button variant="secondary" onClick={deleteUser}>회원탈퇴</Button>
-            </div>
-            <div className="SearchHistory">
+            
+            <Button variant="secondary" onClick={deleteUser}>회원탈퇴</Button>
+            
+            {/* <div className="SearchHistory">
                 <h2 style={{width: "1200px"}}>검색기록</h2>
                 {renderHistory()}
-            </div>
+            </div> */}
             {modal ? <Modal
                 setModal={setModal} 
                 title={modalInfo.title}

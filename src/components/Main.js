@@ -5,6 +5,7 @@ import Bestseller from "./BestsellerList";
 import LibraryRank from './LibraryRank';
 import BookList from "./BookList";
 import Mypage from "./Mypage";
+import SearchHistory from './SearchHistory';
 import RegionCodeTranslate from './RegionCodeTranslate';
 import Login from './Login';
 import InputGroup from 'react-bootstrap/InputGroup'
@@ -168,30 +169,38 @@ function Main() {
         setOpenMypage(true);
     }
 
-    const onUserInfoMouseOver = () => {
+    const onUserInfoMouseEnter = () => {
         setIsMouseOverUserInfo(true);
     }
 
-    const onUserInfoMouseOut = () => {
+    const onUserInfoMouseLeave = () => {
         setIsMouseOverUserInfo(false);
     }
 
     const renderUserInfo = useCallback(() => {
         return(
-            <div className="UserInfoBox" onClick={onUserInfoClick} onMouseOver={onUserInfoMouseOver} onMouseOut={onUserInfoMouseOut}>
+            <div className="UserInfoBox" onClick={null} onMouseEnter={onUserInfoMouseEnter} onMouseLeave={onUserInfoMouseLeave}>
                 <img className='UserThumb' src={loginInfo.imgURL} alt='userThumb'></img>
                 <div className='UserInfo'>
                     {loginInfo.name}님 환영합니다.
                 </div>
-                
+                {isMouseOverUserInfo ? renderUserInfoMenu() : null}
             </div>
         )
 
-    },[loginInfo.imgURL, loginInfo.name])
+    },[loginInfo.imgURL, loginInfo.name, isMouseOverUserInfo])
+
+    const renderUserInfoMenu = () => {
+        return(
+            <div className="UserInfoMenu">
+                <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} onUserInfoClick={onUserInfoClick} />
+            </div>
+        )
+    }
 
     const renderMypage = () => {
         return (
-            <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} />
+            <SearchHistory/>
         )
     }
 
@@ -254,10 +263,7 @@ function Main() {
                             </>: null}
                     </div>
                     </div>
-                    
-                        {loginState ? renderUserInfo() : <Login 
-                        setOpenMypage={setOpenMypage}
-                        />}
+                        {loginState ? renderUserInfo() : <Login setOpenMypage={setOpenMypage} />}
                 </div>
             </div>
             

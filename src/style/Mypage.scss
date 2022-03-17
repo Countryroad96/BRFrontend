@@ -1,7 +1,7 @@
 .Mypage {
-  background-color: #f5f5f6;
+  background-color: #ffffff;
   display: flex;
-  justify-content: center;
+  //justify-content: center;
   align-items: center;
   flex-direction: column;
   margin-top: 20px;
@@ -10,11 +10,16 @@
   margin-bottom: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
+  position: absolute;
+  height: 400px;
+  width: 340px;
+  left: 70%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
 
   .UserInfo {
     display: grid;
     width: 246px;
-    height: 120px;
     grid-template-columns: 1fr;
     justify-items: start;
     align-items: center;
@@ -22,7 +27,6 @@
 
   .UpdateInfo {
     display: grid;
-    height: 120px;
     grid-template-columns: 50px 1fr;
     justify-items: start;
     align-items: center;
