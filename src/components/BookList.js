@@ -234,7 +234,7 @@ const BookList = (props) => {
                     <td colSpan="2">
                         <div style={{textAlign: "center"}}>
                             <Button variant="secondary" className="CloseDetailButton" onClick={() => setShowDetail(false)}>
-                                닫기
+                                접기
                             </Button>
                         </div>
                     </td>
@@ -262,7 +262,7 @@ const BookList = (props) => {
         <div className="BookInfoBox">
             <table style={{width: "100%"}}>
                 <tbody>
-                    <tr onClick={() => onClickfunc(props={e: i+1, showDtl: showDetail})} style={{display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "125px", marginTop: "10px", backgroundColor: "#ffffff"}}>
+                    <tr className="BookInfo" onClick={() => onClickfunc(props={e: i+1, showDtl: showDetail})} >
                         <td className="BookImgTable">
                             <table>
                                 <tbody>
