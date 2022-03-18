@@ -3,6 +3,16 @@
   width: 1200px;
   align-items: flex-start;
 
+  .BookInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 125px;
+    margin-top: 10px;
+    background-color: #ffffff;
+    cursor: pointer;
+  }
+
   .BookImg {
     max-width: 82px;
     margin-left: 2px;
