@@ -195,19 +195,15 @@ function Main() {
                 <div className='UserInfo'>
                     {loginInfo.name}님 환영합니다.
                 </div>
-                {isMouseOverUserInfo ? renderUserInfoMenu() : null}
+                {isMouseOverUserInfo ?
+                    <div className="UserInfoMenu">
+                        <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} onUserInfoClick={onUserInfoClick} />
+                    </div>
+                : null}
             </div>
         )
 
     },[loginInfo.imgURL, loginInfo.name, isMouseOverUserInfo])
-
-    const renderUserInfoMenu = () => {
-        return(
-            <div className="UserInfoMenu">
-                <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} onUserInfoClick={onUserInfoClick} />
-            </div>
-        )
-    }
 
     const renderMypage = () => {
         return (
