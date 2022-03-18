@@ -2,9 +2,10 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSelector } from 'react-redux';
 import BookList from "./BookList";
 import axios from 'axios';
-import "../style/BestsellerList.scss"
+import "../style/LibraryRank.scss"
 import tab from "../style/image/tabBoard_bar.gif";
 import PuffLoader from 'react-spinners/PuffLoader';
+import Button from 'react-bootstrap/Button';
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
@@ -26,6 +27,7 @@ function LibraryRank() {
     const [searchGenre, setSearchGenre] = useState("전체");
     const [searchTerm, setSearchTerm] = useState(defaultTerm);
     const [selected, setSelected] = useState("3개월");
+    const [isError, setIsError] = useState(false);
 
     const loginState = useSelector(state => state.updateLoginState.login);
     const loginInfo = useSelector(state => state.updateLoginState.user);
@@ -34,10 +36,22 @@ function LibraryRank() {
     const rankGenre = useMemo(() => ["전체", "철학", "종교", "사회과학", "자연과학",
                         "기술과학", "예술", "언어", "문학", "역사"],[]);
     const genreCode = useMemo(() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],[]);
+    const age = {
+        "0": "영유아(0~5세)",
+        "6": "유아(6~7세)",
+        "8": "초등(8~13세)",
+        "14": "청소년(14~19세)",
+        "20": "20대",
+        "30": "30대",
+        "40": "40대",
+        "50": "50대",
+        "60": "60세 이상",
+        "-1": "전연령",
+    };
 
     const getLibraryRank = useCallback( async (props) => {
-
         setBook([]);
+        setIsError(false);
         setLoadingState(true);
         try{
             const res = await axios.get(`${END_POINT}/library`, {
@@ -81,6 +95,7 @@ function LibraryRank() {
         catch (error) {
         console.log(error);
         setLoadingState(false);
+        setIsError(true);
         }
     },[display, genreCode, loginInfo.age, loginState, rankGenre, searchTerm.enddate, searchTerm.startdate]);
 
@@ -112,7 +127,7 @@ function LibraryRank() {
 
     const selectRankGenre = () => {
         return (
-            <div className="BestsellerGenre">
+            <div className="LibraryRankGenre">
                 {rankGenre.map((genre, i) => <RenderGenre key={genre} genre={genre} i={i} />)}
             </div>
         )
@@ -174,11 +189,20 @@ function LibraryRank() {
         )
     }
 
-    useEffect(() => {getLibraryRank({genre: searchGenre});},[getLibraryRank, searchGenre]);
+    useEffect(() => {getLibraryRank({genre: searchGenre});}, [getLibraryRank, searchGenre]);
+
+    const onRefreshClick = () => {
+        getLibraryRank({genre: searchGenre});
+    }
 
     return (
-        <div className="BestsellerList">
-            <h2>{selected} {searchGenre} 인기대출도서</h2>
+        <div className="LibraryRank">
+            <div className="LibraryRankHeader">
+                <h2>{selected} {loginState ? age[loginInfo.age] : age["-1"]} {searchGenre} 인기대출도서 TOP 10</h2>
+                <div className="RefreshButton">
+                <Button variant="secondary" id="button-addon2" onClick={onRefreshClick} >새로고침</Button>
+                </div>
+            </div>
             {selectRankGenre()}
             <SelectTerm />
             <div style={{textAlign: 'center'}}>{loadingState && books.length === 0 ? 
@@ -187,7 +211,8 @@ function LibraryRank() {
                     <PuffLoader color={"#00ACFD"} loading={true} css={{display: "block", height: "100px", margin: "auto", marginTop: "20px"}} size={80} />
                 </>: null}
             </div>
-            {books.map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false} />)}
+            {isError ? <><div style={{margin: "60px"}}>인기대출도서 정보를 불러오는데 실패하였습니다.</div></>
+                    : books.map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false} />)}
         </div>
     )
 }

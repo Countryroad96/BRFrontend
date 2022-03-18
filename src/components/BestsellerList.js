@@ -4,6 +4,7 @@ import axios from 'axios';
 import "../style/BestsellerList.scss"
 import tab from "../style/image/tabBoard_bar.gif";
 import PuffLoader from 'react-spinners/PuffLoader';
+import Button from 'react-bootstrap/Button';
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
@@ -14,6 +15,7 @@ function Bestseller() {
     const [books, setBook] = useState([]);
     const [display] = useState(10);
     const [searchGenre, setSearchGenre] = useState("종합");
+    const [isError, setIsError] = useState(false);
 
     const bestsellerGenre = useMemo(() => ["종합", "가정/요리/뷰티", "건강/취미/레저", "경제경영", "고전", "과학", "만화",
                             "사회과학", "소설/시/희곡", "어린이", "에세이", "여행", "역사", "예술/대중문화",
@@ -24,6 +26,7 @@ function Bestseller() {
 
     const getBestseller = useCallback( async (props) => {
         setBook([]);
+        setIsError(false);
         setLoadingState(true);
         try{
             const res = await axios.get(`${END_POINT}/bestseller`, {
@@ -64,6 +67,7 @@ function Bestseller() {
         catch (error) {
         console.log(error);
         setLoadingState(false);
+        setIsError(true);
         }
     },[bestsellerGenre, display, genreCode]);
 
@@ -104,9 +108,19 @@ function Bestseller() {
 
     useEffect(() => {getBestseller({genre: searchGenre});},[searchGenre, getBestseller]);
 
+    const onRefreshClick = () => {
+        getBestseller({genre: searchGenre});
+    }
+
     return (
         <div className="BestsellerList">
-            <h2>{searchGenre} 베스트 셀러</h2>
+            
+            <div className="BestsellerHeader">
+                <h2>{searchGenre} 베스트 셀러 TOP 10</h2>
+                <div className="RefreshButton">
+                    <Button variant="secondary" id="button-addon2" onClick={onRefreshClick} >새로고침</Button>
+                </div>
+            </div>
             {selectBestsellerGenre()}
             <div style={{textAlign: 'center'}}>{loadingState && books.length === 0 ? 
                 <>
@@ -114,7 +128,8 @@ function Bestseller() {
                     <PuffLoader color={"#00ACFD"} loading={true} css={{display: "block", height: "100px", margin: "auto", marginTop: "20px"}} size={80} />
                 </>: null}
             </div>
-            {books.map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false}/>)}
+            {isError ? <><div style={{margin: "60px"}}>베스트 셀러 정보를 불러오는데 실패하였습니다.</div></> 
+                    : books.map((book, i) => <BookList key={book.id} book={book} i={i} frommypage={false}/>)}
         </div>
     )
 }
