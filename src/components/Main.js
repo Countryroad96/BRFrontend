@@ -122,6 +122,7 @@ function Main() {
     }
 
     const onClickHomepage = () => {
+        setSearchText("");
         setOpenMypage(false);
         setBook([]);
         setSearchState(false);
@@ -131,6 +132,16 @@ function Main() {
     }
 
     const renderSearchlist = () => {
+        if(typeof books == "undefined" || books == null || books.length === 0)
+        {
+            return (
+                <div className="SearchList">
+                    <h1>검색 결과</h1>
+                    <br/>
+                    검색 결과가 없습니다. 검색어를 확인해 주세요.
+                </div>
+            )
+        }
         return (
             <div className="SearchList">
                 <h1>검색 결과</h1>
