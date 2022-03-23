@@ -190,17 +190,20 @@ function Main() {
 
     const renderUserInfo = useCallback(() => {
         return(
-            <div className="UserInfoBox" onClick={null} onMouseEnter={onUserInfoMouseEnter} onMouseLeave={onUserInfoMouseLeave}>
-                <img className='UserThumb' src={loginInfo.imgURL} alt='userThumb'></img>
-                <div className='UserInfo'>
-                    {loginInfo.name}님 환영합니다.
+            <>
+                <div className="UserInfoBox" onClick={onUserInfoMouseEnter} onMouseEnter={null} onMouseLeave={null}>
+                    <img className='UserThumb' src={loginInfo.imgURL} alt='userThumb'></img>
+                    <div className='UserInfo'>
+                        {loginInfo.name}님 환영합니다.
+                    </div>
                 </div>
                 {isMouseOverUserInfo ?
-                    <div className="UserInfoMenu">
+                <>
+                    <div className="UserInfoMenuWrap" onClick={onUserInfoMouseLeave}></div>
                         <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} onUserInfoClick={onUserInfoClick} />
-                    </div>
+                </>
                 : null}
-            </div>
+            </>
         )
 
     },[loginInfo.imgURL, loginInfo.name, isMouseOverUserInfo])
@@ -245,30 +248,27 @@ function Main() {
                         <span>Book Recommend</span>
                     </div>
                     <div className="Input">
-                    <span>현재검색지역 : {region.fullName}</span>
-                    <>
-                        <InputGroup className="InputBar mb-3">
-                            <FormControl
-                            aria-label="Recipient's username"
-                            aria-describedby="basic-addon2"
-                            placeholder="제목, 저자, ISBN"
-                            value={searchText}                 
-                            onKeyUp={onKeyUp}
-                            onChange={e => setSearchText(e.target.value)}
-                            />
-                            <Button variant="secondary" id="button-addon2" onClick={onSubmit} >
-                            검색
-                            </Button>
-                        </InputGroup>
-                    </>
-                    <div className="SearchRegionSelector">
-                        <span onClick={onClickOpReSel}>도서관검색지역선택 {openRegionSelector? "▲" : "▼"}</span><br/>
-                        
-                        {openRegionSelector ? 
-                            <>
-                                <RegionSelector changeLoginstate={false} setRegion={true} onClickRegionReset={onClickRegionReset}/>
-                            </>: null}
-                    </div>
+                        <span>현재검색지역 : {region.fullName}</span>
+                            <InputGroup className="InputBar mb-3">
+                                <FormControl
+                                aria-label="Recipient's username"
+                                aria-describedby="basic-addon2"
+                                placeholder="제목, 저자, ISBN"
+                                value={searchText}                 
+                                onKeyUp={onKeyUp}
+                                onChange={e => setSearchText(e.target.value)}
+                                />
+                                <Button variant="secondary" id="button-addon2" onClick={onSubmit} >
+                                검색
+                                </Button>
+                            </InputGroup>
+                        <div className="SearchRegionSelector">
+                            <span onClick={onClickOpReSel}>도서관검색지역선택 {openRegionSelector? "▲" : "▼"}</span><br/>
+                            {openRegionSelector ? 
+                                <>
+                                    <RegionSelector changeLoginstate={false} setRegion={true} onClickRegionReset={onClickRegionReset}/>
+                                </>: null}
+                        </div>
                     </div>
                         {loginState ? renderUserInfo() : <Login setOpenMypage={setOpenMypage} />}
                 </div>
