@@ -883,7 +883,7 @@ function Mypage(props) {
                 />
             </div>
             
-            <Button variant="secondary" onClick={deleteUser}>회원탈퇴</Button>
+            <Button className="WithdrawalButton" variant="secondary" onClick={deleteUser}>회원탈퇴</Button>
             
             {modal ? <Modal
                 setModal={setModal} 

@@ -7,7 +7,6 @@
   padding-bottom: 10px;
   position: absolute;
   height: 430px;
-  //width: 400px;
   top: 110px;
   right: 48px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -38,6 +37,14 @@
 
   .GoogleLogoutButton {
     margin: 25px;
+
+    .LogoutButton {
+      width: 122px;
+    }
+  }
+
+  .WithdrawalButton {
+    width: 122px;
   }
 
   .MypageSelectBox {
@@ -54,5 +61,6 @@
   .UpdateButton {
     margin-top: 10px;
     margin-inline: auto;
+    width: 122px;
   }
 }
