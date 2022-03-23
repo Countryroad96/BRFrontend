@@ -13,6 +13,7 @@ function Logout(props) {
 
     const onSuccess = () => {
         props.setOpenMypage(false);
+        props.setOpenSearchHistory(false);
         props.setShowRankBest(true);
         dispatch(updateLogout());
         dispatch(selectRegion({region: "11", subregion: "010"}));
