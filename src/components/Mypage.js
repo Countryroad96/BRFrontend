@@ -858,6 +858,7 @@ function Mypage(props) {
                 }
             }).then((res) => {
                 props.setOpenMypage(false);
+                props.setOpenSearchHistory(false);
                 props.setShowRankBest(true);
                 dispatch(updateLogout());
             })
@@ -872,12 +873,13 @@ function Mypage(props) {
             <h5>{loginInfo.name} 님</h5>
             {editState ? renderEditUser() : renderUser()}
 
-            <Button variant="secondary" className="UpdateButton" onClick={() => props.onUserInfoClick()}>검색이력</Button>
+            <Button variant="secondary" className="UpdateButton" onClick={() => props.onOpenSearchHistoryClick()}>검색이력</Button>
 
             <div className="GoogleLogoutButton">
                 <Logout
                     setOpenMypage={props.setOpenMypage}
                     setShowRankBest={props.setShowRankBest}
+                    setOpenSearchHistory={props.setOpenSearchHistory}
                 />
             </div>
             

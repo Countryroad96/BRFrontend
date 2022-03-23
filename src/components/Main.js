@@ -30,7 +30,7 @@ function Main() {
     const [showRankBest, setShowRankBest] = useState(true);
     const [openRegionSelector, setOpenRegionSelector] = useState(false);
     const [loadingState, setLoadingState] = useState(false);
-    const [isMouseOverUserInfo, setIsMouseOverUserInfo] = useState(false);
+    const [openSearchHistory, setOpenSearchHistory] = useState(false);
 
     const loginState = useSelector(state => state.updateLoginState.login);
     const loginInfo = useSelector(state => state.updateLoginState.user);
@@ -43,7 +43,6 @@ function Main() {
     useEffect(() => {
         if (loginInfo.status === "new") {
             setOpenMypage(true);
-            setShowRankBest(false);
         }
     },[loginInfo]);
 
@@ -106,7 +105,7 @@ function Main() {
             return;
         }
         e.preventDefault();
-        setOpenMypage(false);
+        setOpenSearchHistory(false);
         setBook([]);
         setSearchState(false);
         setShowRankBest(false);
@@ -123,7 +122,7 @@ function Main() {
 
     const onClickHomepage = () => {
         setSearchText("");
-        setOpenMypage(false);
+        setOpenSearchHistory(false);
         setBook([]);
         setSearchState(false);
         setShowRankBest(true);
@@ -171,44 +170,49 @@ function Main() {
         }        
     },[totalPage])
 
-    const onUserInfoClick = () => {
+    const onOpenSearchHistoryClick = () => {
         setBook([]);
         setPage(1);
         setTotalPage(0);
         setSearchState(false);
         setShowRankBest(false);
+        setOpenSearchHistory(true);
+    }
+
+    const onUserInfoMouseInClick = () => {
         setOpenMypage(true);
     }
 
-    const onUserInfoMouseEnter = () => {
-        setIsMouseOverUserInfo(true);
-    }
-
-    const onUserInfoMouseLeave = () => {
-        setIsMouseOverUserInfo(false);
-    }
+    const onUserInfoMouseOutClick = useCallback(() => {
+        if (loginInfo.status === "new") {
+            alert("초기정보를 입력해 주세요.");
+            return;
+        }
+        setOpenMypage(false);
+    },[loginInfo])
 
     const renderUserInfo = useCallback(() => {
         return(
             <>
-                <div className="UserInfoBox" onClick={onUserInfoMouseEnter} onMouseEnter={null} onMouseLeave={null}>
+                <div className="UserInfoBox" onClick={onUserInfoMouseInClick}>
                     <img className='UserThumb' src={loginInfo.imgURL} alt='userThumb'></img>
                     <div className='UserInfo'>
                         {loginInfo.name}님 환영합니다.
                     </div>
                 </div>
-                {isMouseOverUserInfo ?
+                {openMypage ?
                 <>
-                    <div className="UserInfoMenuWrap" onClick={onUserInfoMouseLeave}></div>
-                        <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} onUserInfoClick={onUserInfoClick} />
+                    <div className="UserInfoMenuWrap" onClick={onUserInfoMouseOutClick}></div>
+                        <Mypage setOpenMypage={setOpenMypage} setShowRankBest={setShowRankBest} onOpenSearchHistoryClick={onOpenSearchHistoryClick}
+                                setOpenSearchHistory={setOpenSearchHistory} />
                 </>
                 : null}
             </>
         )
 
-    },[loginInfo.imgURL, loginInfo.name, isMouseOverUserInfo])
+    },[loginInfo.imgURL, loginInfo.name, openMypage, onUserInfoMouseOutClick])
 
-    const renderMypage = () => {
+    const renderSearchHistory = () => {
         return (
             <SearchHistory/>
         )
@@ -281,7 +285,7 @@ function Main() {
                         <h5 style={{marginTop: "20px", textAlign: "center"}}>검색중입니다</h5>
                         <PuffLoader color={"#00ACFD"} loading={true} css={{display: "block", height: "100px", margin: "auto", marginTop: "20px"}} size={80} />
                     </> : null}
-                {openMypage ? renderMypage() : null}
+                {openSearchHistory ? renderSearchHistory() : null}
                 {(searchState) ? renderSearchlist() : null}
                 {showRankBest ? (<><Bestseller /><LibraryRank /></>) : null}
                 </div>
