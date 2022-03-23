@@ -660,8 +660,6 @@ function RegionCodeTranslate(props) {
                     if (townNum === dtl_regionCode[regionName][i][j]) {
                     cityName = i;
                     townName = Object.keys(dtl_regionCode[regionName][i]).find(key => dtl_regionCode[regionName][i][key] === townNum);
-                    console.log("1", cityName);
-                    console.log("2", townName);
                     }
                 }
             }
