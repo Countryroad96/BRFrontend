@@ -4,7 +4,7 @@ import axios from 'axios';
 import "../style/BestsellerList.scss"
 import tab from "../style/image/tabBoard_bar.gif";
 import PuffLoader from 'react-spinners/PuffLoader';
-import Button from 'react-bootstrap/Button';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
@@ -114,11 +114,10 @@ function Bestseller() {
 
     return (
         <div className="BestsellerList">
-            
             <div className="BestsellerHeader">
                 <h2>{searchGenre} 베스트 셀러 TOP 10</h2>
                 <div className="RefreshButton">
-                    <Button variant="secondary" id="button-addon2" onClick={onRefreshClick} >새로고침</Button>
+                    <RefreshIcon fontSize="large" onClick={onRefreshClick}/>
                 </div>
             </div>
             {selectBestsellerGenre()}

@@ -5,7 +5,7 @@ import axios from 'axios';
 import "../style/LibraryRank.scss"
 import tab from "../style/image/tabBoard_bar.gif";
 import PuffLoader from 'react-spinners/PuffLoader';
-import Button from 'react-bootstrap/Button';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 const END_POINT = `${process.env.REACT_APP_END_POINT}`;
 
@@ -200,7 +200,7 @@ function LibraryRank() {
             <div className="LibraryRankHeader">
                 <h2>{selected} {loginState ? age[loginInfo.age] : age["-1"]} {searchGenre} 인기대출도서 TOP 10</h2>
                 <div className="RefreshButton">
-                <Button variant="secondary" id="button-addon2" onClick={onRefreshClick} >새로고침</Button>
+                    <RefreshIcon fontSize="large" onClick={onRefreshClick}/>
                 </div>
             </div>
             {selectRankGenre()}
