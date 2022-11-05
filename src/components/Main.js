@@ -197,7 +197,7 @@ function Main() {
                 <div className="UserInfoBox" onClick={onUserInfoMouseInClick}>
                     <img className='UserThumb' src={loginInfo.imgURL} alt='userThumb'></img>
                     <div className='UserInfo'>
-                        {loginInfo.name}님 환영합니다.
+                        {loginInfo.name}님
                     </div>
                 </div>
                 {openMypage ?
